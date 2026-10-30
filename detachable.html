@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>비스트메이커 판 공구 없이 탈부착 (스테이션 v7 부록)</title>
+<style>
+  :root{--fg:#1d1d1f;--mut:#6e6e73;--line:#e3e3e6;--card:#f6f6f8;--acc:#d9480f;--acc2:#1c7ed6;--ok:#2b8a3e;--warn:#e67700;--red:#e03131;--ply:#ead7ad;--lum:#d6b77d;--stl:#3b3f45}
+  @media (prefers-color-scheme: dark){:root{--fg:#f2f2f2;--mut:#a1a1a6;--line:#333336;--card:#1f1f22;--acc:#ff8a4c;--acc2:#5aa9ff;--ok:#5bd17a;--warn:#ffb347;--red:#ff6b6b;--ply:#7a6a4a;--lum:#8a7448;--stl:#9aa0a6} body{background:#141416}}
+  body{margin:0;font:14px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;color:var(--fg)}
+  main{max-width:1000px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-size:23px;letter-spacing:-.02em;margin:0 0 4px} h2{font-size:18px;margin:36px 0 10px;padding-top:14px;border-top:1px solid var(--line)} h3{font-size:15px;margin:18px 0 6px}
+  .sub{color:var(--mut);font-size:13px} a{color:var(--acc2);text-decoration:none}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:18px 0}
+  .stat .l{font-size:12px;color:var(--mut)} .stat .v{font-size:21px;font-weight:650;letter-spacing:-.02em} .stat .n{font-size:12px;color:var(--mut)}
+  .note{background:var(--card);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:10px}
+  table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top} th{font-weight:600;color:var(--mut);font-size:12px} td.r,th.r{text-align:right}
+  .chip{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;font-weight:600} .ok{color:var(--ok)} .chip.ok{background:color-mix(in oklab,var(--ok) 18%,transparent)} .chip.warn{background:color-mix(in oklab,var(--warn) 20%,transparent);color:var(--warn)} .chip.bad{background:color-mix(in oklab,var(--red) 18%,transparent);color:var(--red)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px} .draw{background:var(--card);border-radius:12px;padding:10px} .draw h3{margin:4px 6px 6px} .draw svg{width:100%;height:auto;display:block} .cap{font-size:12px;color:var(--mut);margin:6px 4px 0}
+  ol.steps{padding-left:20px} ol.steps li{margin:6px 0}
+  .tw{overflow-x:auto}
+  svg text{font-family:-apple-system,"Apple SD Gothic Neo",system-ui,sans-serif}
+</style>
+</head>
+<body>
+<main>
+<h1>비스트메이커 판을 공구 없이 떼고 다는 방법</h1>
+<div class="sub">스테이션 v7의 부록. 단위 mm, 좌표는 v7과 같음(기둥 중심 z=0, 앞(사용자 쪽) +z, 가로봉 중심 높이 C=2,020 추정). 2026-10-30. <a href="https://we-like-fail.github.io/hangboard-station/">본 설계 v7</a></div>
+
+<div class="stats">
+  <div class="stat"><div class="l">추천 방식</div><div class="v">가로봉 걸이판</div><div class="n">해외에서 가장 많이 쓰는 「봉에 걸고 아래는 기둥에 기대기」</div></div>
+  <div class="stat"><div class="l">떼는 시간</div><div class="v">약 10초</div><div class="n">멈치 2개 돌리고 들어 올림</div></div>
+  <div class="stat"><div class="l">추가 구매</div><div class="v">0원</div><div class="n">18T 자투리 + 구조목 여분 + 남는 피스</div></div>
+  <div class="stat"><div class="l">가장 낮은 안전율</div><div class="v ok">1.7</div><div class="n">걸이판 → 받침목 피스 (설계하중 기준)</div></div>
+</div>
+
+<div class="note"><b>한 줄 요약.</b> 판 뒤에 받침목 2개를 붙이고, 그 옆에 아래로 열린 U자 홈이 있는 합판 걸이판을 달아 <b>가로봉에 걸어 둡니다</b>. 판이 앞으로 젖혀지려는 힘은 판 아래 받침 블록이 기둥 앞면을 눌러 막고, 좌우는 측판의 코너블록이 잡고, 들림은 나무 회전 멈치 2개가 막습니다. 떼면 가로봉이 비어서 일반 턱걸이도 할 수 있습니다.</div>
+
+<h2>1. 방식 비교</h2>
+<div class="tw"><table>
+<thead><tr><th>방식</th><th>떼는 법·시간</th><th>추가 구매</th><th>힘</th><th>위험·제약</th><th>판단</th></tr></thead>
+<tbody>
+<tr><td><b>A. 가로봉 걸이판 + 기둥 받침 + 회전 멈치</b></td><td>멈치 2개 돌리고 들어 올림, 약 10초</td><td>0원</td><td>걸이 이빨 안전율 3.8, 피스 1.7 이상(아래 표)</td><td>가로봉 지름 실측 후 홈을 현장에서 맞춰 따야 함. 들림은 멈치가 막음</td><td><span class="chip ok">추천</span></td></tr>
+<tr><td>B. 볼트 기둥(스터드) + 손잡이 너트</td><td>위쪽 손잡이 너트 2개를 약 26바퀴씩 풀고 앞으로 뺌, 약 1분 반</td><td>손잡이 너트 M8 외경 50 5개 6,300원 + 배송비</td><td>위 너트 당김 약 640N, 판 받침 확실</td><td>돌리는 횟수가 많음. 플라스틱 손잡이 너트 안 금속 나사 여부 미확인</td><td><span class="chip warn">대안</span></td></tr>
+<tr><td>C. 노브볼트로 판을 코너블록에 바로 조임</td><td>노브 4개</td><td>-</td><td>-</td><td>코너블록이 앞뒤로 89라 머리 아래 약 117mm 노브볼트가 필요한데 쿠팡 노브볼트는 80·100mm까지만 확인. 블록 뒤를 깊게 파면 벽이 6mm만 남음</td><td><span class="chip bad">불가</span></td></tr>
+<tr><td>D. 프렌치 클리트(45° 맞물림)</td><td>들어 올림, 몇 초</td><td>0원</td><td>충분</td><td>45° 긴 컷을 직소로 정확히 하기 어렵고, 클리트 두께만큼 판이 앞으로 나와 넘어짐 여유가 줄어듦</td><td><span class="chip warn">비추천</span></td></tr>
+<tr><td>E. 끈·슬링으로 매달기</td><td>즉시</td><td>슬링</td><td>-</td><td>흔들림, 판 높이 낮아짐, 회전. 해외 사례 공통 불만</td><td><span class="chip bad">비추천</span></td></tr>
+</tbody></table></div>
+
+<h2>2. 구조 (A. 가로봉 걸이판)</h2>
+<div class="grid2">
+<div class="draw"><h3>옆 단면 (오른쪽 걸이판 위치에서 봄)</h3>
+<svg viewBox="0 0 360 360" id="side">
+  <!-- transform: x = z + 80, y = 2110 - Y -->
+  <g transform="translate(80,2110) scale(1,-1)">
+    <rect x="-25" y="1780" width="50" height="320" fill="var(--stl)" opacity=".35"/>
+    <!-- corner block (other plane) -->
+    <rect x="25" y="1820" width="89" height="250" fill="none" stroke="var(--mut)" stroke-dasharray="5 4"/>
+    <!-- cheek top line -->
+    <line x1="-130" y1="1965" x2="114" y2="1965" stroke="var(--mut)" stroke-dasharray="2 4"/>
+    <!-- cleat -->
+    <rect x="25" y="1855" width="89" height="215" fill="var(--lum)" stroke="var(--fg)" stroke-width="1"/>
+    <!-- hook plate -->
+    <path d="M113 1950 L17 1950 L17 2020 A17 17 0 0 1 -17 2020 L-17 1950 L-47 1950 L-47 2070 L113 2070 Z" fill="var(--ply)" stroke="var(--acc)" stroke-width="1.5" opacity=".95"/>
+    <!-- crossbar -->
+    <circle cx="0" cy="2020" r="16" fill="#e8590c"/>
+    <!-- board & BM -->
+    <rect x="114" y="1855" width="24" height="200" fill="var(--ply)" stroke="var(--fg)" stroke-width="1"/>
+    <rect x="138" y="1855" width="58" height="150" fill="#c8935a" stroke="var(--fg)" stroke-width="1"/>
+    <!-- standoff (other plane) -->
+    <rect x="25" y="1855" width="89" height="38" fill="none" stroke="var(--acc2)" stroke-dasharray="4 3" stroke-width="1.5"/>
+    <!-- toggle -->
+    <rect x="40" y="2070" width="70" height="12" fill="var(--lum)" stroke="var(--ok)" stroke-width="1.5"/>
+    <!-- screws plate-cleat -->
+    <g fill="none" stroke="var(--fg)" stroke-width="1"><circle cx="45" cy="1965" r="3"/><circle cx="95" cy="1965" r="3"/><circle cx="45" cy="2005" r="3"/><circle cx="95" cy="2005" r="3"/><circle cx="45" cy="2045" r="3"/><circle cx="95" cy="2045" r="3"/></g>
+    <!-- hand force -->
+    <line x1="176" y1="1935" x2="176" y2="1895" stroke="var(--red)" stroke-width="2.5"/><polygon points="171,1900 181,1900 176,1888" fill="var(--red)"/>
+    <!-- hook reaction -->
+    <line x1="-25" y1="2020" x2="-65" y2="2020" stroke="var(--acc2)" stroke-width="2.5"/><polygon points="-60,2015 -60,2025 -72,2020" fill="var(--acc2)"/>
+    <!-- standoff reaction -->
+    <line x1="25" y1="1874" x2="60" y2="1874" stroke="var(--acc2)" stroke-width="2.5"/><polygon points="55,1869 55,1879 67,1874" fill="var(--acc2)"/>
+  </g>
+  <g font-size="9" fill="var(--mut)">
+    <text x="55" y="22">걸이판 18T (주황 테두리)</text>
+    <text x="5" y="80" fill="#e8590c">가로봉 Ø32(실측)</text>
+    <text x="198" y="120">판 24T</text>
+    <text x="230" y="190" fill="var(--fg)">비스트메이커</text>
+    <text x="230" y="202" fill="var(--red)">손 하중</text>
+    <text x="110" y="232" fill="var(--fg)">받침목(구조목)</text>
+    <text x="110" y="250" fill="var(--acc2)">받침 블록 → 기둥 앞면을 누름</text>
+    <text x="2" y="250">기둥</text>
+    <text x="118" y="40" fill="var(--ok)">회전 멈치(코너블록 위)</text>
+    <text x="2" y="112" fill="var(--acc2)">가로봉이 걸이판을</text>
+    <text x="2" y="122" fill="var(--acc2)">뒤로 잡음</text>
+    <text x="150" y="152">측판 위 끝(점선)</text>
+    <text x="60" y="352">← 뒤                                   앞(사용자) →</text>
+  </g>
+  <g font-size="8.5" fill="var(--acc)">
+    <line x1="300" y1="90" x2="300" y2="255" stroke="var(--acc)"/><line x1="295" y1="90" x2="305" y2="90" stroke="var(--acc)"/><line x1="295" y1="255" x2="305" y2="255" stroke="var(--acc)"/><text x="303" y="175">165</text>
+    <text x="265" y="88">가로봉 중심</text><text x="265" y="268">판 아래 끝</text>
+  </g>
+</svg>
+<div class="cap">가로봉 중심에서 판 아래 끝까지 165, 판 뒷면까지 114(v7과 같은 위치). 점선은 다른 x 위치에 있는 부품(코너블록·받침 블록).</div></div>
+
+<div class="draw"><h3>판 뒤에서 본 모습 (오른쪽 절반)</h3>
+<svg viewBox="0 0 380 300">
+  <!-- x = X(mm) - 300 ... map X 300..640 → 0..340 ; y = 2100 - Y -->
+  <g transform="translate(-300,2100) scale(1,-1)">
+    <rect x="525" y="1800" width="50" height="300" fill="var(--stl)" opacity=".35"/>
+    <rect x="300" y="2004" width="220" height="32" fill="#e8590c"/>
+    <rect x="520" y="1965" width="5" height="110" fill="#e8590c" opacity=".7"/>
+    <rect x="483" y="1800" width="24" height="165" fill="none" stroke="var(--mut)"/>
+    <rect x="445" y="1820" width="38" height="250" fill="var(--lum)" opacity=".55" stroke="var(--mut)"/>
+    <rect x="300" y="1855" width="300" height="200" fill="var(--ply)" opacity=".55" stroke="var(--fg)" stroke-width=".8"/>
+    <rect x="400" y="1855" width="38" height="215" fill="var(--lum)" stroke="var(--fg)" stroke-width="1"/>
+    <rect x="382" y="1950" width="18" height="120" fill="var(--ply)" stroke="var(--acc)" stroke-width="1.5"/>
+    <rect x="511" y="1855" width="89" height="38" fill="none" stroke="var(--acc2)" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <rect x="420" y="2070" width="56" height="12" fill="var(--lum)" stroke="var(--ok)" stroke-width="1.5"/>
+    <g fill="none" stroke="var(--fg)"><circle cx="419" cy="1880" r="3"/><circle cx="419" cy="1930" r="3"/><circle cx="419" cy="1980" r="3"/><circle cx="419" cy="2030" r="3"/></g>
+  </g>
+  <g font-size="9" fill="var(--mut)">
+    <text x="4" y="40">판(1200 중 오른쪽 절반)</text>
+    <text x="70" y="62" fill="#e8590c">가로봉</text>
+    <text x="78" y="20" fill="var(--acc)">걸이판 X 382~400</text>
+    <text x="96" y="268" fill="var(--fg)">받침목 X 400~438</text>
+    <text x="150" y="285">코너블록 445~483 (측판에 고정, 좌우 안내)</text>
+    <text x="232" y="228" fill="var(--acc2)">받침 블록</text>
+    <text x="232" y="160">측판</text>
+    <text x="270" y="140">기둥</text>
+    <text x="150" y="28" fill="var(--ok)">회전 멈치</text>
+  </g>
+</svg>
+<div class="cap">받침목과 코너블록 사이 7mm. 판을 걸면 받침목이 코너블록 사이로 들어가 좌우가 잡힘. 걸이판은 가로봉 고정판·너트(X 485 바깥)에서 85mm 안쪽이라 닿지 않음. 받침목 피스 4개는 판 앞면에서(X ±419, 비스트메이커 바깥 129mm).</div></div>
+</div>
+
+<div class="grid2" style="margin-top:16px">
+<div class="draw"><h3>걸이판 ×2 (18T, 160×120)</h3>
+<svg viewBox="-20 -30 230 190">
+  <path d="M0 0 L160 0 L160 120 L64 120 L64 50 A17 17 0 0 0 30 50 L30 120 L0 120 Z" fill="var(--ply)" stroke="var(--fg)" stroke-width="1.2"/>
+  <g fill="none" stroke="var(--fg)"><circle cx="92" cy="25" r="3"/><circle cx="142" cy="25" r="3"/><circle cx="92" cy="65" r="3"/><circle cx="142" cy="65" r="3"/><circle cx="92" cy="105" r="3"/><circle cx="142" cy="105" r="3"/></g>
+  <g font-size="8" fill="var(--acc)">
+    <line x1="0" y1="-12" x2="160" y2="-12" stroke="var(--acc)"/><text x="72" y="-15">160</text>
+    <line x1="172" y1="0" x2="172" y2="120" stroke="var(--acc)"/><text x="175" y="62">120</text>
+    <text x="30" y="140">홈 폭 = 가로봉 Ø + 2 (예상 34)</text>
+    <text x="0" y="152">이빨 30 · 홈 중심 위 50 · 앞 끝까지 113</text>
+  </g>
+  <text x="96" y="85" font-size="7.5" fill="var(--mut)">피스 6 (받침목에)</text>
+  <text x="-16" y="135" font-size="7.5" fill="var(--mut)">← 뒤</text><text x="140" y="135" font-size="7.5" fill="var(--mut)">앞 →</text>
+</svg>
+<div class="cap">왼쪽이 철봉 뒤쪽. 홈은 아래로 열린 U자(위는 반원). 홈 위치는 도면 값으로 따지 말고, 4단계에서 실제 가로봉에 대고 연필로 윤곽을 따서 자름. 18T 자투리(간격재 옆 131×403)에서 2장.</div></div>
+
+<div class="draw"><h3>받침목 ×2 · 회전 멈치 ×2</h3>
+<svg viewBox="-24 -20 264 265">
+  <rect x="0" y="0" width="89" height="215" fill="var(--lum)" stroke="var(--fg)"/>
+  <g fill="none" stroke="var(--fg)"><circle cx="44.5" cy="190" r="3"/><circle cx="44.5" cy="140" r="3"/><circle cx="44.5" cy="90" r="3"/><circle cx="44.5" cy="40" r="3"/></g>
+  <rect x="0" y="0" width="88" height="120" fill="none" stroke="var(--acc)" stroke-dasharray="4 3"/>
+  <g font-size="8" fill="var(--acc)"><line x1="-10" y1="0" x2="-10" y2="215" stroke="var(--acc)"/><text x="-22" y="112">215</text><line x1="0" y1="227" x2="89" y2="227" stroke="var(--acc)"/><text x="38" y="239">89</text></g>
+  <text x="95" y="20" font-size="8" fill="var(--mut)">받침목: 구조목 215 (판 위로 15)</text>
+  <text x="95" y="32" font-size="8" fill="var(--mut)">(89면 = 앞뒤, 38 = 좌우)</text>
+  <text x="95" y="48" font-size="8" fill="var(--mut)">피스 4: 판 앞면에서</text>
+  <text x="95" y="60" font-size="8" fill="var(--mut)">아래 끝에서 25·75·125·175</text>
+  <text x="95" y="76" font-size="8" fill="var(--acc)">점선 = 걸이판 겹치는 곳(위 120)</text>
+  <rect x="120" y="120" width="90" height="40" rx="6" fill="var(--lum)" stroke="var(--ok)" stroke-width="1.5"/>
+  <circle cx="140" cy="140" r="3" fill="none" stroke="var(--fg)"/>
+  <text x="120" y="176" font-size="8" fill="var(--mut)">회전 멈치: 18T 자투리 90×40</text>
+  <text x="120" y="188" font-size="8" fill="var(--mut)">피스 1개 + 와셔로 코너블록 위 끝에(높이 같음)</text>
+  <text x="120" y="200" font-size="8" fill="var(--mut)">(손으로 돌아갈 만큼만 조임)</text>
+</svg>
+<div class="cap">받침목은 구조목 4번(여분 1,800)에서 215. 위 끝이 판 위 끝보다 15 높아 걸이판 피스가 받침목 끝에서 25 이상 떨어짐. 코너블록도 v7의 235 대신 250으로 잘라 위 끝을 받침목과 같은 높이(가로봉 중심 위 50)로 맞추면 멈치가 평평하게 돌아감. 코너블록 위 끝 ↔ 가로봉은 앞뒤로 9mm 떨어져 닿지 않음.</div></div>
+</div>
+
+<h2>3. 힘 검사 (설계하중 100kg × 동적 2배, 한쪽 981N, 몸 0°·20° 중 나쁜 쪽)</h2>
+<div class="tw"><table>
+<thead><tr><th>검사</th><th class="r">걸리는 값</th><th class="r">버티는 값</th><th class="r">안전율</th><th>근거</th></tr></thead>
+<tbody>
+<tr><td>판이 가로봉 축으로 앞으로 젖혀지는 모멘트</td><td class="r">173 N·m</td><td class="r">-</td><td class="r">-</td><td>손이 가로봉보다 176 앞. 받침 블록이 기둥 앞면을 누르는 힘 1,183N(몸 0°), 가로봉이 걸이판을 뒤로 잡는 힘 최대 1,332N(몸 20°)</td></tr>
+<tr><td>걸이판 이빨 굽힘 (18T, 두께 30)</td><td class="r">7.9 MPa</td><td class="r">30 MPa</td><td class="r">3.8</td><td>자작합판 굽힘 강도 약 30MPa(보수). 합판이라 결 방향 쪼개짐 없음(구조목 이빨은 결 직각 인장이라 불가)</td></tr>
+<tr><td>걸이판 이빨 전단</td><td class="r">2.5 MPa</td><td class="r">7 MPa</td><td class="r">2.8</td><td>합판 판면 전단 약 7MPa</td></tr>
+<tr><td>걸이판 → 받침목 피스 6개 (가장 센 1개)</td><td class="r">687 N</td><td class="r">1,150 N</td><td class="r">1.7</td><td>합력 1,654N + 모멘트 89N·m. 목공 본드를 같이 쓰면 더 여유</td></tr>
+<tr><td>받침목 → 판 피스 뽑힘 (맨 위)</td><td class="r">373 N</td><td class="r">1,000 N</td><td class="r">2.7</td><td>세로 하중이 판 뒷면에서 114 뒤(가로봉)로 옮겨지는 모멘트. 가로 1,332N은 판이 받침목을 누르는 방향이라 피스에 안 걸림</td></tr>
+<tr><td>받침 블록 → 기둥 앞면 지압</td><td class="r">0.6 MPa</td><td class="r">3 MPa</td><td class="r">5</td><td>1,183N / (38×50)</td></tr>
+<tr><td>가로봉 굽힘 (참고)</td><td class="r">156 N·m</td><td class="r">-</td><td class="r">-</td><td>걸이판이 가로봉 끝 근처(지지점에서 약 129)라, 원래 용도인 턱걸이(가운데 1,962N → 510N·m)보다 작음</td></tr>
+<tr><td>넘어짐 (v7 S8·S8b)</td><td class="r">변화 없음</td><td class="r"></td><td class="r">1.56</td><td>손 위치가 같음. 뒤쪽 추 30kg 규칙 그대로</td></tr>
+<tr><td>측판 볼트 (v7 S5)</td><td class="r">감소</td><td class="r"></td><td class="r"></td><td>비스트메이커 하중이 측판이 아니라 가로봉으로 감 → 측판 볼트는 레일 하중만(최대 약 1.2kN)</td></tr>
+</tbody></table></div>
+
+<h3>맞춤·간섭</h3>
+<div class="tw"><table>
+<thead><tr><th>항목</th><th class="r">값</th><th>메모</th></tr></thead>
+<tbody>
+<tr><td>걸이판 홈 ↔ 가로봉 (반지름 여유)</td><td class="r">1</td><td>홈 폭 = 실측 지름 + 2. 헐거우면 자전거 튜브 고무를 홈 안에 붙임</td></tr>
+<tr><td>걸이판 ↔ 가로봉 고정판·너트 (좌우)</td><td class="r">85</td><td>걸이판 X 400, 고정판 X 485 이상</td></tr>
+<tr><td>받침목 ↔ 코너블록 (좌우)</td><td class="r">7</td><td>좌우 안내 역할</td></tr>
+<tr><td>받침목 ↔ 측판 볼트 너트·와셔</td><td class="r">27</td><td>와셔 X 465 이상</td></tr>
+<tr><td>걸이판 ↔ 레일 끝블록 최고점 (위아래)</td><td class="r">209</td><td>끝블록 최고 1,741, 걸이판 아래 1,950</td></tr>
+<tr><td>판 뒤 ↔ 코너블록 앞면·측판 앞 끝</td><td class="r">0</td><td>닿는 것이 정상(뒤 받침)</td></tr>
+</tbody></table></div>
+
+<h2>4. 만들기 (v7 4단계 「비스트메이커 판」을 이것으로 바꿈)</h2>
+<ol class="steps">
+<li>판(1200×200)에 비스트메이커와 받침 블록 2개를 붙임. v7과 같음.</li>
+<li><b>받침목</b>(구조목 215) 2개를 판 뒷면에, 판 끝에서 162~200 사이(좌우 대칭), 아래 끝 = 판 아래 끝(위로 15 나옴). 목공 본드 + 판 앞면에서 5×50 4개씩(판 아래 끝에서 25·75·125·175, 3mm 예비구멍).</li>
+<li>v7 2단계의 코너블록을 250으로 잘라(위 끝 = 가로봉 중심 위 50) 그 위 끝에 <b>회전 멈치</b>(18T 90×40)를 피스 1개 + 와셔로, 손으로 돌아갈 만큼만 조여 둠.</li>
+<li><b>홈 위치 따기</b>: 판을 철봉에 대 봄. 판 아래 끝 = 가로봉 중심 아래 165, 판 뒷면이 코너블록 앞면에 닿게, 받침목은 코너블록 사이로. 아래는 받침목이나 한 사람이 받침. 걸이판 재료(18T 160×120)를 받침목 안쪽면에 대고 클램프로 물린 뒤 가로봉 윤곽을 연필로 그림.</li>
+<li>떼어 내어 <b>홈 자르기</b>: 그린 원보다 사방 1mm 크게, 아래로 열린 U자. 뒤쪽 이빨 두께 30 이상 남김. 직소 + 사포.</li>
+<li>걸이판을 받침목 안쪽면에 본드 + 5×50 6개(받침목 앞면 기준 18·68, 걸이판 위 끝에서 25·65·105).</li>
+<li>판을 걸어 보고 흔들어 확인: 앞뒤로 안 움직이고(받침 블록이 기둥에 닿음), 좌우 7mm 안에서만 움직이면 통과. 멈치 2개를 돌려 받침목 위를 덮음.</li>
+</ol>
+
+<h2>5. 떼기 · 달기</h2>
+<div class="grid2">
+<div class="note"><b>떼기 (약 10초)</b><ol class="steps"><li>회전 멈치 2개를 돌려 받침목 위에서 비킴.</li><li>판 양끝을 잡고 4cm 들어 올림(홈이 가로봉에서 빠짐).</li><li>앞으로 빼서 내려놓음. 판과 비스트메이커 합쳐 약 6~7kg.</li></ol></div>
+<div class="note"><b>달기 (약 15초)</b><ol class="steps"><li>받침목을 코너블록 사이에 맞추고 홈을 가로봉 위에 얹음.</li><li>판 아래가 기둥 앞면(받침 블록)에 닿았는지, 판 뒤가 코너블록에 붙었는지 봄.</li><li>멈치 2개를 돌려 잠금. 발을 바닥에 둔 채 가볍게 당겨 본 뒤 매달림.</li></ol></div>
+</div>
+
+<h2>6. 주의와 확정할 것</h2>
+<ul>
+<li><b>가로봉 지름과 위치는 실측</b>(철봉 도착 후). 홈은 도면 숫자가 아니라 실제 가로봉에 대고 땀.</li>
+<li>판이 걸려 있을 때 그 가로봉으로 턱걸이를 하지 않음(걸이판 사이 손 위치가 겹침). 턱걸이는 판을 떼고 하거나 비스트메이커 위 엣지로.</li>
+<li>멈치는 들림만 막음. 판에 매달려 위로 밀거나 뛰어 잡는 동작(다이노)은 하지 않음.</li>
+<li>v7의 다른 규칙 그대로: 뒤쪽 추 30kg, 한 손 매달리기 제한, 양쪽 각도 핀.</li>
+<li>v7에서 바뀌는 것: 판을 코너블록에 박던 5×50 8개를 안 씀(코너블록은 좌우 안내 + 뒤 받침으로 남음). 피스는 받침목 8 + 걸이판 12 + 멈치 2 = 22개 추가, 100개 안에서 충분. 코너블록은 235 → 250.</li>
+</ul>
+
+<h2>7. 대안 B: 볼트 기둥 + 손잡이 너트 (가로봉 걸이가 마음에 안 들 때)</h2>
+<div class="note">
+<ul>
+<li>코너블록 뒤에서 M8×150(측판 볼트 세트에서 남는 것) 2개씩을 꽂고(머리 + 대와셔가 블록 뒷면), 블록 앞면에서 너트로 고정. 판 뒷면에 너트 자리 Ø20 깊이 9 홈. 판은 Ø10 구멍으로 볼트에 끼움.</li>
+<li>위쪽 볼트(판 아래 끝에서 135)에만 손잡이 너트 M8, 아래쪽(25)은 위치 잡기만. 판 젖힘 당김 약 640N은 볼트·대와셔(블록 뒷면 지압 0.5MPa)가 받음.</li>
+<li>떼기: 위 손잡이 너트 2개를 약 26바퀴씩 풀고 판을 앞으로 뺌. 볼트가 판을 계속 받치고 있어 떨어지지 않음. 약 1분 반.</li>
+<li>구매: 「손잡이 너트 플라스틱 그릴 노브 너트 M8 외경 50mm, 5개, 29mm」 6,300원(쿠팡, 배송비 별도 확인 필요). 안쪽 나사가 금속 인서트인지는 미확인.</li>
+</ul></div>
+
+<h2>8. 근거가 된 해외 사례</h2>
+<ul class="sub">
+<li>WhiteOak Power Rack Base: 합판을 금속 갈고리 3개로 봉에 걸고 양끝은 기둥 앞면에 기댐, 랙 볼트 자리 모서리 홈.</li>
+<li>레딧 r/homegym 1ooo4rw(Dane 2.0 스탠드): 판 뒤 브래킷으로 봉에 걸고, 받침목이 앞 기둥 너트에 닿아 회전을 막음.</li>
+<li>레딧 r/climbharder rh0p5r 최다 추천 댓글: 「갈고리로 걸고, 판 아래를 넓혀 기둥에 버티게 하라」.</li>
+<li>Stone-Age Productions 영상 댓글·Alpinist 영상: 봉에 걸고 아래 받침목이 판을 수직으로 유지.</li>
+<li>Frictitious 문틀 마운트 사용 규칙: 매번 가볍게 하중 시험, 걸이식에서는 폭발적 동작 금지.</li>
+</ul>
+</main>
+</body>
+</html>
