@@ -1,0 +1,353 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>범용 걸이 v3: 어느 단일 철봉에나 거는 비스트메이커 판</title>
+<style>
+  :root{--fg:#1d1d1f;--mut:#6e6e73;--line:#e3e3e6;--card:#f6f6f8;--acc:#d9480f;--acc2:#1c7ed6;--ok:#2b8a3e;--warn:#e67700;--red:#e03131;--ply:#ead7ad;--lum:#d6b77d;--stl:#3b3f45}
+  @media (prefers-color-scheme: dark){:root{--fg:#f2f2f2;--mut:#a1a1a6;--line:#333336;--card:#1f1f22;--acc:#ff8a4c;--acc2:#5aa9ff;--ok:#5bd17a;--warn:#ffb347;--red:#ff6b6b;--ply:#7a6a4a;--lum:#8a7448;--stl:#9aa0a6} body{background:#141416}}
+  body{margin:0;font:14px/1.65 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo",system-ui,sans-serif;color:var(--fg)}
+  main{max-width:1000px;margin:0 auto;padding:28px 20px 80px}
+  h1{font-size:23px;letter-spacing:-.02em;margin:0 0 4px} h2{font-size:18px;margin:36px 0 10px;padding-top:14px;border-top:1px solid var(--line)} h3{font-size:15px;margin:18px 0 6px}
+  .sub{color:var(--mut);font-size:13px} a{color:var(--acc2);text-decoration:none}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin:18px 0}
+  .stat .l{font-size:12px;color:var(--mut)} .stat .v{font-size:21px;font-weight:650;letter-spacing:-.02em} .stat .n{font-size:12px;color:var(--mut)}
+  .note{background:var(--card);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:10px}
+  table{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums} th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top} th{font-weight:600;color:var(--mut);font-size:12px} td.r,th.r{text-align:right}
+  .chip{display:inline-block;font-size:11px;padding:1px 8px;border-radius:999px;font-weight:600} .ok{color:var(--ok)} .chip.ok{background:color-mix(in oklab,var(--ok) 18%,transparent)} .chip.warn{background:color-mix(in oklab,var(--warn) 20%,transparent);color:var(--warn)} .chip.bad{background:color-mix(in oklab,var(--red) 18%,transparent);color:var(--red)}
+  .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px} .draw{background:var(--card);border-radius:12px;padding:10px} .draw h3{margin:4px 6px 6px} .draw svg{width:100%;height:auto;display:block} .cap{font-size:12px;color:var(--mut);margin:6px 4px 0}
+  ol.steps{padding-left:20px} ol.steps li{margin:6px 0}
+  .tw{overflow-x:auto}
+  svg text{font-family:-apple-system,"Apple SD Gothic Neo",system-ui,sans-serif}
+  #viewer{position:relative;height:560px;border-radius:12px;background:var(--card);overflow:hidden;margin-top:10px}
+  .tb{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;align-items:center}
+  .tb button{font:inherit;font-size:13px;padding:5px 11px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+  .tb button.on{background:var(--fg);color:var(--card)} .tb label{font-size:13px;color:var(--mut);cursor:pointer}
+  .tb input[type=range]{flex:1;min-width:200px}
+  .lbl{font-size:11px;padding:2px 6px;border-radius:6px;background:rgba(20,20,22,.78);color:#fff;white-space:nowrap;pointer-events:none}
+  #state{font-size:13px;margin-top:6px;font-variant-numeric:tabular-nums}
+  @media (max-width:640px){ #viewer{height:420px} }
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head><body>
+<main>
+<h1>범용 걸이 v3: 어느 단일 철봉에나 거는 비스트메이커 판</h1>
+<div class="sub">탈부착 걸이의 세 번째 판(v1 U자 걸이판 → v2 3D·이빨 길이 수정 → v3 범용). 단위 mm. 좌표: 가로봉 중심 기준, 앞(사용자 쪽) +z, 위 +y. 2026-10-30. <a href="./">본 설계 v7</a> · <a href="detachable.html">v2 (이노이 전용 걸이)</a></div>
+
+<div class="stats">
+  <div class="stat"><div class="l">맞는 가로봉 지름</div><div class="v">22~44</div><div class="n">90° V 홈이 어떤 지름이든 두 빗면으로 받음</div></div>
+  <div class="stat"><div class="l">맞는 기둥 안쪽 간격</div><div class="v">660~1,280</div><div class="n">기둥 폭 38~60, 사각·원형. 걸이판 자리 2곳 + 받침팔 각도 0~55°</div></div>
+  <div class="stat"><div class="l">기둥 앞면 위치</div><div class="v">−60 ~ +29</div><div class="n">가로봉 중심 기준(+ 면 기둥이 앞). 잭 볼트로 맞춤</div></div>
+  <div class="stat"><div class="l">기둥 받침 힘 (이노이)</div><div class="v" id="statT">−</div><div class="n" id="statTn">판 바로 아래에서 받을 때의 약 절반</div></div>
+</div>
+
+<div class="note"><b>한 줄 요약.</b> 판을 <b>90° V 홈 걸이판 2개로 가로봉에 얹고</b>, 판 뒤 양끝에 <b>돌아가는 받침팔 2개</b>를 달아 팔 끝 잭 볼트가 <b>좌우 기둥 앞면</b>을 누르게 합니다. 손이 가로봉보다 앞에 있어 생기는 회전(판 아래가 뒤로 가려는 힘)을 가로봉이 아니라 <b>가로봉 아래 330~490mm에서 기둥이 받습니다</b>. 받침이 낮을수록 같은 회전을 작은 힘으로 막으므로, v2처럼 판 바로 아래(가로봉 아래 약 175)에서 받는 것보다 기둥을 미는 힘이 약 40% 수준이 됩니다. 가로봉은 비틀리지 않고(V 홈은 돌림을 못 전달), 굽힘도 같은 하중으로 어깨너비 턱걸이할 때보다 작습니다(기둥 안쪽 간격 710 이상).</div>
+
+<h2>0. 3D로 보기: 철봉 치수를 바꾸면 장치가 맞춰짐</h2>
+<div class="sub">철봉을 고르거나 숫자를 바꾸면 걸이판 자리·받침팔 각도·잭 길이가 다시 계산되고, 아래 검사표가 바로 바뀝니다. 이노이 외의 예시는 <b>가상 철봉</b>입니다(이번 조사에서 다른 제품의 가로봉 지름·기둥 간격은 공개 글로 확인되지 않음).</div>
+<div class="tb" id="presets"></div>
+<div id="viewer"></div>
+<div class="tb"><button id="btnPlay">▶ 떼는 동작 재생</button><button id="btnReset">걸린 상태로</button><input type="range" id="slider" min="0" max="100" value="0"></div>
+<div id="state"></div>
+<div class="tb"><span class="sub">보기</span><button data-v="front" class="on">앞</button><button data-v="iso">위쪽 입체</button><button data-v="back">뒤</button><button data-v="side">옆</button><button data-v="full">전체</button>
+<label><input type="checkbox" id="cbLbl" checked> 이름표</label><label><input type="checkbox" id="cbHuman"> 사람(키 174cm)</label></div>
+<div class="tw"><table id="inputs"></table></div>
+<h3>이 철봉에서의 결과</h3>
+<div class="stats" id="solveStats"></div>
+<div class="tw"><table id="checks"><thead><tr><th>번호</th><th>검사</th><th class="r">값</th><th>판정</th><th>설명</th></tr></thead><tbody></tbody></table></div>
+
+<h2>1. 원리: 회전을 기둥으로 넘기기</h2>
+<div class="grid2">
+  <div class="draw"><h3>옆에서 본 힘 (이 철봉, 가장 센 경우)</h3><div id="forceSvg"></div><div class="cap">손이 가로봉보다 e만큼 앞이라 W·e만큼 판 아래가 뒤로 돌려고 함. 기둥이 h 아래에서 T로 밀어 막음: T = 회전 ÷ h. 가로봉은 수직 V와 작은 수평 H만 받음.</div></div>
+  <div class="draw"><h3>받침 높이에 따른 기둥 받침 힘 (한쪽)</h3><div id="hSvg"></div><div class="cap">같은 회전이라도 받침을 아래로 내릴수록 힘이 줄어듦. 점: v2(판 바로 아래 받침)와 이 철봉의 v3.</div></div>
+</div>
+<div class="tw"><table><thead><tr><th>방식</th><th>회전을 누가 받나</th><th>어느 철봉에나?</th><th>문제</th></tr></thead><tbody>
+<tr><td>가로봉에만 걸기 (끈·갈고리)</td><td>가로봉 비틀림·마찰</td><td>예</td><td>둥근 봉은 비틀림을 못 받아 판이 앞으로 기울거나 흔들림. 봉이 슬리브 안에서 도는 철봉은 더 심함 (해외 사례에서 흔한 불만)</td></tr>
+<tr><td>v2: 가로봉 걸이 + 판 아래 받침 블록</td><td>기둥 앞면, 가로봉 아래 약 175</td><td>아니오 (이노이 치수에 맞춘 코너블록 필요)</td><td>받침이 높아 기둥을 미는 힘이 큼(한쪽 약 975N)</td></tr>
+<tr><td><b>v3: V 홈 걸이 + 돌아가는 받침팔 + 잭</b></td><td>기둥 앞면, 가로봉 아래 330~490</td><td>예 (아래 범위)</td><td>받침팔이 기둥 쪽으로 펼쳐져 판보다 넓음. 처음 한 번 철봉에 맞출 때 17mm 스패너 필요</td></tr>
+</tbody></table></div>
+
+<h2>2. 맞는 철봉 범위 (전체 범위 훑기)</h2>
+<div id="envelope"></div>
+
+<h2>3. 부품과 가공도</h2>
+<div class="grid2" id="drawings"></div>
+<div class="tw"><table id="parts"><thead><tr><th>부품</th><th>재료 · 치수</th><th class="r">개수</th><th>비고</th></tr></thead><tbody></tbody></table></div>
+
+<h2>4. 처음 한 번: 내 철봉에 맞추기</h2>
+<ol class="steps">
+<li><b>네 가지만 잰다</b>: 가로봉 지름(둘레 ÷ 3.14), 기둥 안쪽 간격, 기둥 폭(앞에서 본), 가로봉 중심에서 기둥 앞면까지(기둥 앞면이 더 앞이면 +). 위 표에 넣으면 걸이판 자리·팔 각도·잭 길이가 나옴.</li>
+<li><b>걸이판 자리 고르기</b>: 기둥 안쪽 간격이 706 이상이면 넓은 자리(±300), 아니면 좁은 자리(±210). 위 받침목 2개를 고른 자리의 티너트에 M10×60 볼트 2개씩으로 판 앞에서 조임.</li>
+<li><b>건다</b>: 판을 5cm 들고 뒤로 밀어 V 홈을 가로봉 위에 맞춰 내려놓음.</li>
+<li><b>받침팔 각도</b>: 회전축 볼트(팔 뒤, 17mm)를 반 바퀴 풀고 팔을 돌려 잭 끝이 기둥 앞면 가운데에 오게 한 뒤 조임. 이 철봉을 쓰는 동안 다시 안 만짐.</li>
+<li><b>잭</b>: 잭 볼트 머리를 손으로 돌려 고무캡이 기둥에 닿게 하고, 휴대폰 수평계로 판이 수직(±1°)이 되게 조정한 뒤 나비너트를 손으로 조여 잠금. 잭 10mm가 판 기울기 약 1.3°.</li>
+<li><b>끈</b>: 캠버클 끈을 걸이판 위 끝 홈 → 가로봉 아래로 한 바퀴 감아 조임(양쪽).</li>
+<li><b>확인</b>: 발을 땅에 둔 채 체중 절반으로 매달려 판이 움직이지 않는지, 잭 고무캡이 기둥 가운데에 있는지 봄. 뒤에 둘 추(검사 F12)를 베이스 뒤 끝에 올림.</li>
+</ol>
+
+<h2>5. 떼기 · 달기 (공구 없음)</h2>
+<div class="grid2">
+<div class="note"><b>떼기 (약 15초)</b><ol class="steps"><li>끈 2개 풀기(캠버클 누르고 당김).</li><li>판 양끝을 잡고 5cm 들어 올림(뒤 이빨이 가로봉 위로 빠짐).</li><li>앞으로 빼기. 받침팔은 각도·잭 길이 그대로 판에 붙어 있음.</li></ol></div>
+<div class="note"><b>달기 (약 20초)</b><ol class="steps"><li>판을 가로봉보다 5cm 높이로 들고 뒤로 밀어, 잭 고무캡이 기둥 앞면에 닿게 함(이때 V 홈이 정확히 가로봉 위).</li><li>내려놓음: V 홈이 가로봉에 앉고 판 무게로 받침이 기둥에 기댐.</li><li>끈 2개 감아 조임.</li></ol></div>
+</div>
+
+<h2>6. 힘 검사 기준</h2>
+<div class="note">설계하중은 v7과 같음: 100kg × 동적 2배 = 1,962N(두 손 합), 몸을 앞뒤 20° 기울임, 손 높이는 비스트메이커 위 손잡이와 아래 포켓 두 경우. 그중 가장 나쁜 조합으로 각 항목을 봄. 안전율 기준 1.5. 넘어짐은 v7과 같은 가정(발 바닥, 손에 60kg, 25° 기울임)이며 철봉 무게·베이스 길이에 따라 필요한 뒤 추가 달라짐. 기둥 굽힘(F11)은 강관 두께 1.5 가정의 참고값이고 제품마다 다름.</div>
+<div id="worstTable"></div>
+
+<h2>7. 추가로 필요한 것</h2>
+<div class="tw"><table id="buy"><thead><tr><th>품목</th><th class="r">수량</th><th>용도</th><th>상태</th></tr></thead><tbody></tbody></table></div>
+
+<h2>8. 미확인 · 한계</h2>
+<ol class="steps" id="unknowns">
+<li><b>다른 철봉 치수</b>: 한국 판매 제품(이고진·멜킨·반석·바디엑스 등) 15개를 찾았지만 가로봉 지름·기둥 간격·가로봉 붙는 위치는 공개 글에 없고 상세 이미지에만 있음. 범위는 그래서 설계로 정한 값이며, 실제 제품이 들어오는지는 각 제품 실측으로 확인해야 함.</li>
+<li><b>치닝디핑(파워타워)형</b>: 가로봉이 앞으로 튀어나온 팔 끝에 있어 기둥 앞면이 가로봉보다 65mm 넘게 뒤면(대부분 이 형태로 보임) 잭이 닿지 않음 → 지원 안 함. 이런 철봉은 잭을 M10×200으로 바꾸면 −110까지 늘어나지만 검사하지 않았음.</li>
+<li><b>가로봉 붙는 철물 돌출 30mm</b> 가정(이노이 사진 추정 20~26). 더 크면 G4가 줄어듦.</li>
+<li><b>손잡이가 꺾인 가로봉</b>: 걸이판 바깥까지 곧은 구간이 필요(넓은 자리 636, 좁은 자리 456).</li>
+<li><b>원형 기둥</b>: 고무캡이 둥근 면에서 옆으로 미끄러질 수 있음. 좌우로는 걸이판 마찰이 받지만 검사에 넣지 않음.</li>
+<li><b>구매 품목</b>: 쿠팡에서 아직 찾아보지 않았음(장바구니 3개 품목과 별개).</li>
+<li><b>이노이 값</b>: 기둥 앞면 +25, 가로봉 높이 2,020, 베이스 앞뒤 550은 추정. 무게 19kg은 판매 페이지 값.</li>
+</ol>
+</main>
+
+<script>
+// 범용 걸이 v3: 어느 단일 철봉에나 거는 비스트메이커 판. 좌표: x 좌우, y 위(장치 기준: 기준 지름 32 가로봉 중심 = 0), z 앞(사용자 쪽). 단위 mm, N.
+const U = {};
+U.D = { // 장치 치수 (고정)
+  boardW: 900, boardY0: -175, boardY1: 75, boardZ0: 72, t24: 24,
+  bmW: 580, bmH: 150, bmD: 58, bmY0: -175,
+  hookPos: {wide: 300, narrow: 210}, cleatW: 89, cleatY0: -30, cleatY1: 75, cleatZ0: 34,
+  plateT: 18, plateTop: 75, plateBack: -45, plateBot: -30, d0: 32,
+  armZ0: 34, armT: 38, armW: 89, Px: 330, Py: -80, Rj: 420, armEnd: 465,
+  jackLen: 150, wingT: 8, capT: 5, tnutBarrel: 11.5,
+  holdZ: 30, holdY: [-60, -150], devMass: 8, devCgZ: 75,
+  lift: 50, hwProt: 30, phiMin: 0, phiMax: 55,
+};
+U.apexY = D => D.d0/2*Math.SQRT2;            // V 꼭짓점 높이 (장치 좌표)
+U.barY = (D, d) => U.apexY(D) - d/2*Math.SQRT2; // 가로봉 중심 높이 (장치 좌표)
+U.plateX0 = (D, st) => D.hookPos[U.hookMode(D,st)];
+U.hookMode = (D, st) => st.hook || (st.s/2 >= D.hookPos.wide + D.plateT + D.hwProt + 5 ? 'wide' : 'narrow');
+U.hookCx = (D, st) => U.plateX0(D,st) + D.plateT/2;       // 걸이판 두께 중심 x
+U.platePoly = D => { const A=U.apexY(D); const zb=D.plateBack, zf=D.cleatZ0; return [[D.boardZ0,D.plateTop],[zb,D.plateTop],[zb,A+zb],[0,A],[zf,A-zf],[zf,D.plateBot],[D.boardZ0,D.plateBot]]; };
+// 철봉(사용자 입력): d 가로봉 지름, s 기둥 안쪽 간격, w 기둥 폭(앞에서 본), shape 'sq'|'round', zpf 가로봉 중심 기준 기둥 앞면 위치(+ = 사용자 쪽), C 가로봉 높이(바닥~중심), bf/br 베이스가 가로봉 면 앞/뒤로 나간 길이, mass 철봉 무게, strutTop 대각지지대 위 끝 높이, postT 기둥 두께
+U.solve = function(st, D=U.D){
+  const r=st.d/2, yb=U.barY(D,st.d), xc=st.s/2+st.w/2;
+  const sphi=(xc-D.Px)/D.Rj, phi=Math.asin(Math.max(-1,Math.min(1,sphi))), ux=Math.sin(phi), uy=-Math.cos(phi);
+  const jx=D.Px+D.Rj*ux, jy=D.Py+D.Rj*uy; // 잭 위치 (장치 좌표)
+  const armBack=D.armZ0, tipZ=st.zpf+D.capT; const prot=armBack-tipZ; // 볼트 끝이 팔 뒷면에서 튀어나온 길이
+  const headGap=tipZ+D.jackLen-(D.armZ0+D.armT); // 머리가 팔 앞면에서 떨어진 거리
+  const h=yb-jy; // 가로봉 중심 ~ 받침점 높이 차
+  // 팔 안쪽 모서리: 비스트메이커 아래 100 높이에서 x
+  const yE=D.bmY0-100; const nIn=[-Math.cos(phi),-Math.sin(phi)]; const tE=(D.Py-yE+D.armW/2*nIn[1])/Math.cos(phi); const xElbow=D.Px+tE*ux+D.armW/2*nIn[0];
+  return {r,yb,xc,phi,phiDeg:phi*180/Math.PI,ux,uy,jx,jy,tipZ,prot,headGap,h,xElbow};
+};
+U.check = function(st, D=U.D){
+  const S=U.solve(st,D), rows=[]; const R=(id,name,val,ok,warn,unit,note)=>rows.push({id,name,val,unit,note,st:ok?(warn?'warn':'ok'):'fail'});
+  const r=S.r, yb=S.yb;
+  // ---- 맞춤 ----
+  R('G1','가로봉 지름이 V 홈 범위 안 (22~44)',st.d,st.d>=22&&st.d<=44,false,'mm',`V 홈 90°라 지름이 달라도 두 빗면에 닿고 중심만 위아래로 움직임: 이 철봉에선 장치 기준 ${yb.toFixed(1)}mm`);
+  const gArm=(yb-r)-(D.Py+D.armW/2); R('G2','가로봉 아래 ↔ 받침팔 둥근 위 끝',gArm,gArm>=3,gArm<6,'mm','팔이 어느 각도로 돌아도 위 끝 원호는 같은 자리');
+  const gCleat=D.cleatZ0-r; R('G3','가로봉 앞 ↔ 위 받침목 뒷면',gCleat,gCleat>=3,false,'mm','');
+  const px0=U.plateX0(D,st), mode=U.hookMode(D,st); const gHw=st.s/2-(px0+D.plateT)-D.hwProt; R('G4',`걸이판 바깥면 ↔ 기둥 쪽 가로봉 고정 철물 (걸이판 자리: ${mode==='wide'?'넓은 자리 ±'+px0:'좁은 자리 ±'+px0})`,gHw,gHw>=5,gHw<15,'mm',`철물이 기둥 안쪽면에서 ${D.hwProt}mm 튀어나왔다고 가정(이노이 너트 사진 추정 20~26). 기둥 안쪽 간격 ${2*(D.hookPos.wide+D.plateT+D.hwProt+5)} 이상이면 넓은 자리, 그보다 좁으면 좁은 자리`);
+  R('G5','받침팔 각도 (10~55°)',S.phiDeg,S.phiDeg>=D.phiMin&&S.phiDeg<=D.phiMax,false,'°',`잭이 기둥 앞면 가운데(x ${S.xc.toFixed(0)})에 오도록 팔을 돌린 각도`);
+  R('G6','잭 볼트가 팔 뒤로 나온 길이 (0~'+(D.jackLen-D.armT-D.wingT-D.tnutBarrel).toFixed(0)+')',S.prot,S.prot>=0&&S.prot<=D.jackLen-D.armT-D.wingT-D.tnutBarrel,false,'mm',`고무캡 ${D.capT} 포함해 기둥 앞면(z ${st.zpf})에 닿게. 0보다 작으면 기둥이 팔보다 앞이라 불가`);
+  const gPost=D.armZ0-st.zpf; R('G7','받침팔 뒷면 ↔ 기둥 앞면 (팔이 기둥 앞을 지나감)',gPost,gPost>=D.capT,false,'mm','');
+  R('G8','팔 안쪽 모서리 (비스트메이커 아래 100mm 높이, 몸 중심에서)',S.xElbow,S.xElbow>=260,S.xElbow<320,'mm','320 이상 여유. 260~320은 비스트메이커 바깥 끝 손잡이에서 팔꿈치를 넓게 벌리면 아래팔이 스칠 수 있음 → 팔 안쪽 모서리에 스펀지 테이프. 260 미만은 불가');
+  R('G9','기둥 받침점 높이 (가로봉 아래)',S.h,true,false,'mm',`바닥에서 ${(st.C-S.h).toFixed(0)}. 이 높이 ±60mm 기둥 앞면에 튀어나온 것(딥스 손잡이·등받이)이 없어야 함`);
+  R('G10','가로봉 곧은 구간 필요 폭 (걸이판 바깥까지)',2*(px0+D.plateT),true,false,'mm','양끝이 꺾인 손잡이 가로봉은 꺾임 시작이 이보다 바깥이어야 함');
+  // ---- 힘 ----
+  const W=1962, g=9.81, md=D.devMass, zh=D.boardZ0+D.t24+D.holdZ; let worst=null;
+  const T_E=(()=>{ const tb=(D.Py-D.boardY0)/Math.cos(S.phi), ts=(D.boardW/2-D.Px)/Math.max(1e-6,Math.sin(S.phi)); return tb<=ts?{t:tb,f:'bottom'}:{t:ts,f:'side'}; })();
+  for(const th of [-20,0,20]) for(const yh of D.holdY){ const t=th*Math.PI/180; const Fy=-W*Math.cos(t), Fz=W*Math.sin(t); // +th: 사용자 쪽으로 당김
+    const zr=zh, yr=yh-yb; const M=yr*Fz-zr*Fy+D.devCgZ*md*g; const T=M/S.h; const V=-Fy+md*g, H=-(T+Fz);
+    const c={th,yh,M,T,V,H}; if(!worst||Math.abs(T)>Math.abs(worst.T)) worst=c; c.minM=M; if(!U._minM||M<U._minM.M) U._minM=c; }
+  const minM=(()=>{ let m=1e9,c0; for(const th of [-20,0,20]) for(const yh of D.holdY){ const t=th*Math.PI/180; const M=(yh-yb)*W*Math.sin(t)+zh*W*Math.cos(t)+D.devCgZ*md*g; if(M<m){m=M;c0={th,yh};} } return {m,...c0}; })();
+  const Ts=worst.T/2, Vs=worst.V/2, Hs=worst.H/2;
+  const F=(id,name,load,cap,unit,note)=>rows.push({id,name,val:cap/load,load,cap,unit,note,st:cap/load>=1.5?'ok':'fail',sf:true});
+  rows.push({id:'F0',name:'받침이 늘 눌려 있는가 (가장 작은 회전 모멘트)',val:minM.m/1000,unit:'N·m',st:minM.m>0?'ok':'fail',note:`사용자 쪽으로 20° 당기고 위 손잡이(장치 y ${minM.yh})를 잡아도 ${(minM.m/1000).toFixed(0)}N·m가 남아 판 아래가 기둥 쪽으로 눌림. 0 아래면 받침이 떨어짐`});
+  rows.push({id:'F1',name:`기둥 받침 힘 (한쪽, 가장 센 경우: 몸 ${worst.th}°, 손 높이 ${worst.yh})`,val:Ts,unit:'N',st:'ok',note:`회전 모멘트 ${(worst.M/1000).toFixed(0)}N·m ÷ 받침 높이 ${S.h.toFixed(0)}mm ÷ 2. 받침이 낮을수록(h가 클수록) 작아짐`});
+  const ratio=Math.abs(Hs)/Vs; rows.push({id:'F2',name:'V 홈에서 가로봉이 빠지지 않음 (수평 ÷ 수직, 1 미만)',val:ratio,unit:'',st:ratio<0.67?'ok':'fail',note:`90° V 홈은 수평력이 수직력보다 작으면 마찰 없이도 안 빠짐. 안전율 1.5를 보려 0.67 미만을 기준으로 함. 수직 ${Vs.toFixed(0)}N, 수평 ${Math.abs(Hs).toFixed(0)}N (한쪽)`});
+  const a=S.xc-U.hookCx(D,st), apu=S.xc-250; const bend=Math.hypot(Vs,Hs)*a/((W/2)*apu); rows.push({id:'F3',name:'가로봉 굽힘: 같은 하중으로 어깨너비(손 ±250) 턱걸이할 때 대비',val:bend,unit:'배',st:bend<=1?'ok':(bend<=1.3?'warn':'fail'),note:`걸이판이 기둥에서 ${a.toFixed(0)}mm, 턱걸이 손은 ${apu.toFixed(0)}mm. 1 이하이면 철봉이 원래 견디도록 만든 하중보다 작음. 가로봉 비틀림은 0(V 홈은 돌림을 못 전달)`});
+  const lev=(D.Rj-T_E.t)/T_E.t, P=Ts*lev, Q=P+Ts;
+  F('F4',`받침팔 회전축 볼트 인장 → 판 앞면 티너트 (판 ${T_E.f==='bottom'?'아래':'옆'} 모서리가 받침점)`,P,3400,'N',`팔이 판 모서리를 지렛목으로 들리려는 힘. 축에서 모서리까지 ${T_E.t.toFixed(0)}, 잭까지 ${D.Rj}. 티너트 테 지름 24.5가 자작합판을 누르는 힘 약 3,400N(10MPa)`);
+  const Marm=Ts*(D.Rj-T_E.t); const fdir=T_E.f==='bottom'?[1,0]:[0,1]; const cosu=Math.abs(fdir[0]*S.ux+fdir[1]*S.uy); const Mb=Marm*Math.sqrt(1-cosu*cosu), Mt=Marm*cosu;
+  F('F5','받침팔 굽힘 (구조목 38×89, 납작하게)',Mb/(D.armW*D.armT**2/6),24,'MPa',`굽힘 ${(Mb/1000).toFixed(0)}N·m. 구조목 굽힘 특성강도 24MPa(보수적)`);
+  F('F6','받침팔 비틀림',Mt/(0.25*D.armW*D.armT**2),4.0*1.35,'MPa',`비틀림 ${(Mt/1000).toFixed(0)}N·m. 구조목 C24 전단 특성강도 4.0MPa × 직사각형 비틀림 형상계수 1.35(유럽 목구조 기준 EN 1995 6.1.8)`);
+  F('F7','판 모서리가 팔에 눌리는 압력',Q/(D.armW*20),10,'MPa',`눌림 ${Q.toFixed(0)}N이 팔 폭 89 × 20mm에 걸린다고 가정. 자작합판 결 직각 압축 약 10MPa`);
+  const Lb=Math.max(10,S.prot+D.capT), I=Math.PI*8.16**4/64, Pcr=Math.PI**2*200000*I/((2*Lb)**2); F('F8','잭 볼트(M10) 좌굴',Ts,Pcr,'N',`팔 뒤로 ${S.prot.toFixed(0)}mm 나온 외팔 기둥(유효길이 2배). 골지름 8.16`);
+  const Mj=Vs*(D.boardZ0)+Math.abs(Hs)*Math.abs(yb-D.cleatY0); const Tb=Mj*85/(40*40+85*85); F('F9','위 받침목 ↔ 판 볼트(M10 2개 + 티너트) 인장',Tb,1700,'N',`걸이판 힘이 판 뒷면에서 ${D.boardZ0}mm 뒤 → 받침목 아래 모서리를 지렛목으로 볼트(모서리 위 40·85)를 당김. 티너트 테가 구조목을 누르는 힘 약 1,700N(5MPa)`);
+  { const pts=[]; for(const z of [44,62]) for(const y of [-15,25,60]) pts.push([z,y]); const cz=53, cy=pts.reduce((s,p)=>s+p[1],0)/6; const J=pts.reduce((s,p)=>s+(p[0]-cz)**2+(p[1]-cy)**2,0); const Mp=Vs*(cz-0)+Hs*(yb-cy); let fm=0; for(const p of pts){ const rz=p[0]-cz, ry=p[1]-cy; const fz=-Mp*ry/J+Hs/6, fy=Mp*rz/J+Vs/6; fm=Math.max(fm,Math.hypot(fz,fy)); } F('F10','걸이판 → 위 받침목 피스 6개 중 가장 센 것',fm,1150,'N',`가로봉 닿는 점이 피스 묶음 중심에서 ${cz}mm 뒤. 5mm 피스 옆 방향 약 1,150N`); }
+  { const Sx=st.shape==='round'?Math.PI*(st.w**4-(st.w-2*st.postT)**4)/(32*st.w):(st.w**4-(st.w-2*st.postT)**4)/(6*st.w); const Mpost=Ts*S.h+Math.abs(W*Math.sin(20*Math.PI/180))/2*Math.max(0,st.C+D.holdY[0]-yb-st.strutTop); F('F11',`기둥 굽힘 (참고: 강관 ${st.shape==='round'?'Ø':''}${st.w}${st.shape==='round'?'':'×'+st.w}×${st.postT}, 대각지지대 위 끝 ${st.strutTop})`,Mpost/Sx,235,'MPa',`받침 짝힘 ${(Ts*S.h/1000).toFixed(0)}N·m + 몸 20° 기울임 수평력. 단면계수 ${Sx.toFixed(0)}mm³, 항복 235 가정. 기둥 두께·재질은 제품마다 다름`); }
+  { const V=60*g, Ht=V*Math.tan(25*Math.PI/180), hy=(st.C+(-100-yb))/1000, bf=st.bf/1000, br=st.br/1000; const resist0=st.mass*g*bf+md*g*(bf-0.075)+V*(bf-zh/1000), over=Ht*hy; const need=Math.max(0,(1.5*over-resist0)/(g*(bf+br)));
+    rows.push({id:'F12',name:'앞으로 넘어짐: 뒤에 둘 추 (v7과 같은 가정: 손에 60kg, 몸 25° 기울임)',val:need,unit:'kg',st:need<=0?'ok':'warn',note:`추 없이 안전율 ${(resist0/over).toFixed(2)}. 베이스 앞 ${st.bf}·뒤 ${st.br}, 철봉 ${st.mass}kg. 비스트메이커를 쓸 때 늘 베이스 뒤 끝에 이만큼(안전율 1.5)`}); }
+  return {S,rows,worst,T_E};
+};
+if(typeof module!=='undefined') module.exports=U; else window.UNI=U;
+
+</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { CSS2DRenderer, CSS2DObject } from 'three/addons/renderers/CSS2DRenderer.js';
+const U=window.UNI, D=U.D, $=id=>document.getElementById(id), S=0.001, fmt=(v,n=0)=>(+v).toLocaleString('ko-KR',{maximumFractionDigits:n,minimumFractionDigits:n});
+const PRESETS=[
+ {name:'이노이 ISP-19',real:true,st:{d:32,s:1050,w:50,shape:'sq',zpf:25,C:2020,bf:550,br:550,mass:19,strutTop:550,postT:1.5},note:'내폭·기둥·무게는 공식, 가로봉 32는 판매처 답변(둘레 10cm), 기둥 앞면·높이·베이스는 추정'},
+ {name:'가상: 좁은 철봉',st:{d:28,s:700,w:40,shape:'sq',zpf:20,C:2050,bf:450,br:450,mass:15,strutTop:500,postT:1.5}},
+ {name:'가상: 가로봉이 기둥 앞 브래킷',st:{d:32,s:1000,w:50,shape:'sq',zpf:-45,C:2100,bf:600,br:500,mass:22,strutTop:550,postT:1.5}},
+ {name:'가상: 넓은 철봉·굵은 봉',st:{d:42,s:1250,w:60,shape:'sq',zpf:20,C:2150,bf:650,br:650,mass:30,strutTop:600,postT:2}},
+ {name:'가상: 원형 기둥·가는 봉',st:{d:25,s:900,w:48,shape:'round',zpf:24,C:2000,bf:550,br:550,mass:18,strutTop:550,postT:2}},
+];
+const FIELDS=[['d','가로봉 지름',22,46,1],['s','기둥 안쪽 간격',600,1340,10],['w','기둥 폭(앞에서 본)',30,70,1],['zpf','기둥 앞면 위치 (가로봉 중심 기준, + 앞)',-90,40,1],['C','가로봉 높이 (바닥~중심)',1700,2400,10],['bf','베이스 앞 길이 (가로봉 면에서)',300,900,10],['br','베이스 뒤 길이',300,900,10],['mass','철봉 무게 (kg)',8,70,1],['postT','기둥 강관 두께',1,3,0.1],['strutTop','대각지지대 위 끝 높이',0,1200,10]];
+let st={...PRESETS[0].st}, cur=0;
+// ---------- inputs ----------
+function drawPresets(){ $('presets').innerHTML='<span class="sub">철봉</span>'+PRESETS.map((p,i)=>`<button data-p="${i}" class="${i===cur?'on':''}">${p.name}</button>`).join(''); document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{ cur=+b.dataset.p; st={...PRESETS[cur].st}; drawPresets(); drawInputs(); update(); }); }
+function drawInputs(){ const t=$('inputs'); t.innerHTML='<tr><th>철봉 치수</th><th class="r">값</th><th>조절</th></tr>'+FIELDS.map(([k,l,a,b,s])=>`<tr><td>${l}</td><td class="r"><input type="number" data-k="${k}" value="${st[k]}" min="${a}" max="${b}" step="${s}" style="width:76px;font:inherit;text-align:right"></td><td><input type="range" data-k="${k}" value="${st[k]}" min="${a}" max="${b}" step="${s}" style="width:100%"></td></tr>`).join('')+`<tr><td>기둥 단면</td><td class="r"><select id="shape" style="font:inherit"><option value="sq">사각</option><option value="round">원형</option></select></td><td class="sub">${PRESETS[cur].note||'가상 예시 치수'}</td></tr>`;
+  $('shape').value=st.shape; $('shape').onchange=e=>{st.shape=e.target.value; update();};
+  t.querySelectorAll('input[data-k]').forEach(inp=>inp.oninput=e=>{ const k=e.target.dataset.k; st[k]=+e.target.value; t.querySelectorAll(`input[data-k="${k}"]`).forEach(o=>{ if(o!==e.target) o.value=st[k]; }); update(); }); }
+// ---------- 3D ----------
+const el=$('viewer'); const scene=new THREE.Scene(); const dark=matchMedia('(prefers-color-scheme: dark)').matches;
+const cam=new THREE.PerspectiveCamera(36,el.clientWidth/el.clientHeight,0.02,50);
+const renderer=new THREE.WebGLRenderer({antialias:true,alpha:true}); renderer.setPixelRatio(Math.min(devicePixelRatio,2)); renderer.setSize(el.clientWidth,el.clientHeight); renderer.shadowMap.enabled=true; el.appendChild(renderer.domElement);
+const lr=new CSS2DRenderer(); lr.setSize(el.clientWidth,el.clientHeight); Object.assign(lr.domElement.style,{position:'absolute',top:'0',pointerEvents:'none'}); el.appendChild(lr.domElement);
+const controls=new OrbitControls(cam,renderer.domElement); controls.enableDamping=true;
+scene.add(new THREE.HemisphereLight(0xffffff,dark?0x222226:0xbbbbbb,1.0)); const sun=new THREE.DirectionalLight(0xffffff,1.3); sun.position.set(2.5,4,3.5); sun.castShadow=true; sun.shadow.mapSize.set(2048,2048); Object.assign(sun.shadow.camera,{left:-2,right:2,top:3,bottom:-1}); scene.add(sun);
+const floor=new THREE.Mesh(new THREE.PlaneGeometry(5,5),new THREE.ShadowMaterial({opacity:dark?.35:.18})); floor.rotation.x=-Math.PI/2; floor.receiveShadow=true; scene.add(floor); scene.add(new THREE.GridHelper(5,50,dark?0x444448:0xcccccc,dark?0x2a2a2e:0xe6e6e6));
+const MC={}; const mat=(c,o={})=>MC[c+JSON.stringify(o)]||(MC[c+JSON.stringify(o)]=new THREE.MeshStandardMaterial({color:c,roughness:o.r??0.65,metalness:o.m??0,side:THREE.DoubleSide,transparent:o.op!=null,opacity:o.op??1}));
+const M={steel:mat(0x2b2d31,{r:.45,m:.4}),bar:mat(0xe8590c,{r:.4,m:.3}),hw:mat(0x868e96,{r:.4,m:.6}),ply:mat(0xe9d3a8),lum:mat(0xd6b77d),bm:mat(0xc8935a),plate:mat(0xf08c00),bolt:mat(0x9aa0a6,{r:.3,m:.8}),rub:mat(0x212529),strap:mat(0x1c7ed6),arm:mat(0xc9a36a)};
+const root=new THREE.Group(), dev=new THREE.Group(); scene.add(root); const labels=[];
+function box(x0,x1,y0,y1,z0,z1,m,parent){ const o=new THREE.Mesh(new THREE.BoxGeometry((x1-x0)*S,(y1-y0)*S,(z1-z0)*S),m); o.position.set((x0+x1)/2*S,(y0+y1)/2*S,(z0+z1)/2*S); o.castShadow=true; o.receiveShadow=true; parent.add(o); return o; }
+function cylZ(x,y,z0,z1,r,m,parent){ const o=new THREE.Mesh(new THREE.CylinderGeometry(r*S,r*S,(z1-z0)*S,20),m); o.rotation.x=Math.PI/2; o.position.set(x*S,y*S,(z0+z1)/2*S); o.castShadow=true; parent.add(o); return o; }
+function cylX(x0,x1,y,z,r,m,parent){ const o=new THREE.Mesh(new THREE.CylinderGeometry(r*S,r*S,(x1-x0)*S,28),m); o.rotation.z=Math.PI/2; o.position.set((x0+x1)/2*S,y*S,z*S); o.castShadow=true; parent.add(o); return o; }
+function cylY(x,y0,y1,z,r,m,parent){ const o=new THREE.Mesh(new THREE.CylinderGeometry(r*S,r*S,(y1-y0)*S,24),m); o.position.set(x*S,(y0+y1)/2*S,z*S); o.castShadow=true; parent.add(o); return o; }
+function label(t,x,y,z,parent){ if(!$('cbLbl').checked) return; const d=document.createElement('div'); d.className='lbl'; d.textContent=t; const o=new CSS2DObject(d); o.position.set(x*S,y*S,z*S); parent.add(o); labels.push(o); }
+function plateMesh(x0,parent){ const sh=new THREE.Shape(); U.platePoly(D).forEach(([z,y],i)=>i?sh.lineTo(z,y):sh.moveTo(z,y)); sh.closePath(); const g=new THREE.ExtrudeGeometry(sh,{depth:D.plateT,bevelEnabled:false}); g.scale(S,S,S); const m=new THREE.Mesh(g,M.plate); m.rotation.y=-Math.PI/2; m.position.x=(x0+D.plateT)*S; m.castShadow=true; parent.add(m); }
+let sol=null;
+function build(){ for(const l of labels) l.parent&&l.parent.remove(l); labels.length=0; root.clear(); dev.clear(); root.add(dev);
+  const c=U.check(st); sol=c; const So=c.S; const C=st.C, xc=So.xc, w=st.w;
+  // ---- stand (absolute y) ----
+  const pz=st.zpf-w/2, top=C+90;
+  for(const sg of [-1,1]){ const x=sg*xc;
+    if(st.shape==='round') cylY(x,0,top,pz,w/2,M.steel,root); else box(x-w/2,x+w/2,40,top,pz-w/2,pz+w/2,M.steel,root);
+    box(x-20,x+20,0,40,-st.br,st.bf,M.steel,root); // base leg
+    const sx0=sg*(st.s/2), sx1=sg*(st.s/2-D.hwProt); box(Math.min(sx0,sx1),Math.max(sx0,sx1),C-40,C+40,Math.min(pz-w/2,-22),Math.max(pz+w/2,22),M.hw,root); // bar hardware
+    // diagonal strut front
+    const a=new THREE.Vector3(x*S,0.04,(st.bf-60)*S), b=new THREE.Vector3(x*S,st.strutTop*S,(pz+w/2)*S); const L=a.distanceTo(b); const o=new THREE.Mesh(new THREE.BoxGeometry(0.025,L,0.025),M.steel); o.position.copy(a).add(b).multiplyScalar(.5); o.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),b.clone().sub(a).normalize()); root.add(o); }
+  box(-xc,xc,0,40,-st.br,-st.br+40,M.steel,root);
+  cylX(-xc,xc,C,0,st.d/2,M.bar,root); label('가로봉 Ø'+st.d,0,C+70,0,root);
+  // ---- device (device coords → absolute: y + C - yb) ----
+  dev.position.y=(C-So.yb)*S; const px0=U.plateX0(D,st);
+  box(-D.boardW/2,D.boardW/2,D.boardY0,D.boardY1,D.boardZ0,D.boardZ0+D.t24,M.ply,dev);
+  box(-D.bmW/2,D.bmW/2,D.bmY0,D.bmY0+D.bmH,D.boardZ0+D.t24,D.boardZ0+D.t24+D.bmD,M.bm,dev);
+  for(const sg of [-1,1]){
+    const cx0=sg>0?px0-D.cleatW:-px0, cx1=sg>0?px0:-px0+D.cleatW; box(cx0,cx1,D.cleatY0,D.cleatY1,D.cleatZ0,D.boardZ0,M.lum,dev);
+    plateMesh(sg>0?px0:-px0-D.plateT,dev);
+    // strap loop around plate top + bar
+    const xs=sg*(px0+D.plateT/2), yb=So.yb, r=st.d/2+2; const pts=[[-14,D.plateTop+2],[14,D.plateTop+2],[r*0.9,yb+r*0.4],[r*0.7,yb-r*0.7],[0,yb-r-1],[-r*0.7,yb-r*0.7],[-r*0.9,yb+r*0.4]].map(([z,y])=>new THREE.Vector3(xs*S,y*S,z*S));
+    const tube=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts,true),60,1.6*S,6,true),M.strap); tube.userData.strap=true; dev.add(tube);
+    // arm
+    const arm=new THREE.Group(); arm.position.set(sg*D.Px*S,D.Py*S,0); arm.rotation.z=sg*So.phi; dev.add(arm);
+    box(-D.armW/2,D.armW/2,-D.armEnd,0,D.armZ0,D.armZ0+D.armT,M.arm,arm);
+    const cap=new THREE.Mesh(new THREE.CylinderGeometry(D.armW/2*S,D.armW/2*S,D.armT*S,32,1,false,0,Math.PI),M.arm); cap.rotation.x=Math.PI/2; cap.rotation.y=Math.PI/2; cap.position.z=(D.armZ0+D.armT/2)*S; arm.add(cap);
+    const jy=-D.Rj; cylZ(0,jy,So.tipZ,So.tipZ+D.jackLen,5,M.bolt,arm); cylZ(0,jy,st.zpf,So.tipZ,8,M.rub,arm); cylZ(0,jy,So.tipZ+D.jackLen,So.tipZ+D.jackLen+6.4,9.5,M.bolt,arm); box(-22,22,jy-6,jy+6,D.armZ0+D.armT,D.armZ0+D.armT+D.wingT,M.bolt,arm);
+    cylZ(sg*D.Px,D.Py,D.armZ0-6.4,D.boardZ0+D.t24+8,5,M.bolt,dev); cylZ(sg*D.Px,D.Py,D.armZ0-6.4-2,D.armZ0,9.5,M.bolt,dev);
+  }
+  label('비스트메이커 2000',0,D.bmY0+D.bmH+18,D.boardZ0+60,dev); label('V 홈 걸이판 + 끈',px0+9,D.plateTop+35,10,dev); label(`받침팔 ${So.phiDeg.toFixed(0)}°`,-(D.Px+D.Rj*0.55*So.ux),D.Py-D.Rj*0.55*Math.cos(So.phi),D.armZ0+60,dev); label(`잭 → 기둥 앞면 (가로봉 아래 ${So.h.toFixed(0)})`,(D.Px+D.Rj*So.ux),So.jy-40,st.zpf,dev);
+  if($('cbHuman').checked) addHuman();
+  apply(); }
+function addHuman(){ const g=new THREE.Group(); const sk=mat(0xf0c8a0,{op:.85}), cl=mat(0x4dabf7,{op:.85}), pa=mat(0x495057,{op:.9}); const cyl=(r,h,y,x,m)=>{ const o=new THREE.Mesh(new THREE.CylinderGeometry(r,r,h,16),m); o.position.set(x,y,0); g.add(o); };
+  for(const s of [-1,1]){ cyl(0.065,0.46,0.23,s*0.09,pa); cyl(0.075,0.44,0.67,s*0.09,pa); cyl(0.045,0.30,1.27,s*0.215,cl); cyl(0.038,0.27,0.99,s*0.215,sk); }
+  const bx=(w,h,d,y,m)=>{ const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m); o.position.y=y; g.add(o); }; bx(0.36,0.2,0.2,0.95,pa); bx(0.38,0.52,0.21,1.16,cl); cyl(0.05,0.1,1.465,0,sk); const hd=new THREE.Mesh(new THREE.SphereGeometry(0.105,20,16),sk); hd.scale.set(1,1.1,1); hd.position.y=1.625; g.add(hd);
+  g.position.set(0,0,0.45); root.add(g); const d=document.createElement('div'); d.className='lbl'; d.textContent='키 174cm (판 앞 45cm)'; const o=new CSS2DObject(d); o.position.set(0,1.84,0.45); root.add(o); labels.push(o); }
+function apply(){ const t=+$('slider').value/100; const base=(st.C-sol.S.yb)*S; const lift=Math.min(t/0.4,1)*D.lift, fwd=Math.max(0,(t-0.4)/0.6)*350;
+  dev.position.set(0,base+lift*S,fwd*S); dev.traverse(o=>{ if(o.userData.strap) o.visible=t<0.02; });
+  $('state').textContent=t<0.02?'걸린 상태: 끈 감김, V 홈이 가로봉에 앉음, 잭이 기둥 앞면을 누름':t<=0.4?`끈 풀고 들어 올리는 중: ${lift.toFixed(0)}mm (뒤 이빨이 가로봉 위로 빠지려면 약 ${(45-0.414*st.d/2).toFixed(0)}mm)`:`앞으로 빼는 중: ${fwd.toFixed(0)}mm`; }
+const VIEWS={front:[[0.35,2.0,2.4],[0,1.75,0]],iso:[[1.7,2.6,1.7],[0,1.8,0]],back:[[0.8,2.5,-1.8],[0,1.85,0]],side:[[1.9,1.95,0.05],[0.4,1.85,0]],full:[[2.6,1.9,3.2],[0,1.1,0]]};
+function setView(v){ const [p,t]=VIEWS[v]; const dy=(st.C-2020)*S; cam.position.set(p[0],p[1]+dy,p[2]); controls.target.set(t[0],t[1]+dy,t[2]); controls.update(); document.querySelectorAll('[data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v)); }
+document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+$('slider').oninput=apply; $('cbLbl').onchange=build; $('cbHuman').onchange=build;
+let anim=null; $('btnPlay').onclick=()=>{ if(anim){cancelAnimationFrame(anim);anim=null;return;} const s=$('slider'); let v=+s.value>=100?0:+s.value; const step=()=>{ v+=0.6; s.value=Math.min(v,100); apply(); if(v<100) anim=requestAnimationFrame(step); else anim=null; }; step(); };
+$('btnReset').onclick=()=>{ $('slider').value=0; apply(); };
+new ResizeObserver(()=>{ const w=el.clientWidth,h=el.clientHeight; cam.aspect=w/h; cam.updateProjectionMatrix(); renderer.setSize(w,h); lr.setSize(w,h); }).observe(el);
+(function loop(){ requestAnimationFrame(loop); controls.update(); renderer.render(scene,cam); lr.render(scene,cam); })();
+// ---------- tables ----------
+const chip=s=>s==='ok'?'<span class="chip ok">통과</span>':s==='warn'?'<span class="chip warn">주의</span>':'<span class="chip bad">불가</span>';
+function valStr(r){ if(r.sf) return `${fmt(r.val,2)} <span class="sub">(${fmt(r.load,r.unit==='MPa'?1:0)}/${fmt(r.cap,r.unit==='MPa'?1:0)} ${r.unit})</span>`; return `${fmt(r.val,r.unit==='배'||r.unit===''?2:0)} ${r.unit}`; }
+function tables(){ const c=sol, So=c.S; const tb=$('checks').querySelector('tbody');
+  tb.innerHTML=c.rows.map(r=>`<tr><td>${r.id}</td><td>${r.name}</td><td class="r">${valStr(r)}</td><td>${r.id==='F11'&&r.st==='fail'?'<span class="chip warn">참고</span>':chip(r.st)}</td><td class="sub">${r.note||''}</td></tr>`).join('');
+  const fails=c.rows.filter(r=>r.st==='fail'&&r.id!=='F11'); const T=c.rows.find(r=>r.id==='F1'); const ball=c.rows.find(r=>r.id==='F12');
+  $('solveStats').innerHTML=[['판정',fails.length?`<span style="color:var(--red)">불가 ${fails.length}건</span>`:'<span class="ok">걸 수 있음</span>',fails.map(f=>f.id).join(', ')||'맞춤·힘 검사 모두 통과'],['걸이판 자리',U.hookMode(D,st)==='wide'?'넓은 자리 ±300':'좁은 자리 ±210','받침목 볼트 위치'],['받침팔 각도',So.phiDeg.toFixed(1)+'°','세로에서 바깥으로'],['잭이 팔 뒤로 나온 길이',So.prot.toFixed(0)+' mm',`머리는 팔 앞면에서 ${So.headGap.toFixed(0)}`],['기둥 받침 높이',`가로봉 아래 ${So.h.toFixed(0)}`,`바닥에서 ${(st.C-So.h).toFixed(0)}`],['기둥 받침 힘 (한쪽)',fmt(T.val)+' N','가장 센 경우'],['뒤에 둘 추',ball.val>0?fmt(ball.val)+' kg':'없음','넘어짐 안전율 1.5']].map(([l,v,n])=>`<div class="stat"><div class="l">${l}</div><div class="v">${v}</div><div class="n">${n}</div></div>`).join('');
+  if(cur===0){ $('statT').textContent=fmt(T.val)+' N'; }
+  forceSvg(); hSvg(); }
+// ---------- SVGs ----------
+const css='font-size:11px;fill:var(--fg)';
+function forceSvg(){ const c=sol, So=c.S, w=c.worst; const sc=0.42, ox=210, oy=70; const P=(z,y)=>[ox+z*sc,oy-(y)*sc]; // y rel bar center (device - yb)
+  const yb=So.yb, Y=y=>y-yb; const poly=pts=>pts.map(p=>P(p[0],p[1]).join(',')).join(' ');
+  const pl=U.platePoly(D).map(([z,y])=>[z,Y(y)]);
+  let s=`<svg viewBox="0 0 470 330">`;
+  s+=`<rect x="${P(st.zpf-st.w,0)[0]}" y="${P(0,60)[1]}" width="${st.w*sc}" height="${(So.h+120)*sc}" fill="var(--stl)" opacity=".55"/>`;
+  s+=`<text x="${P(st.zpf-st.w,0)[0]-4}" y="${P(0,-So.h-50)[1]}" text-anchor="end" style="${css}">기둥</text>`;
+  s+=`<polygon points="${poly(pl)}" fill="#f08c00" opacity=".85"/>`;
+  s+=`<rect x="${P(D.cleatZ0,0)[0]}" y="${P(0,Y(D.cleatY1))[1]}" width="${(D.boardZ0-D.cleatZ0)*sc}" height="${(D.cleatY1-D.cleatY0)*sc}" fill="var(--lum)"/>`;
+  s+=`<rect x="${P(D.boardZ0,0)[0]}" y="${P(0,Y(D.boardY1))[1]}" width="${D.t24*sc}" height="${(D.boardY1-D.boardY0)*sc}" fill="var(--ply)" stroke="var(--mut)" stroke-width=".5"/>`;
+  s+=`<rect x="${P(D.boardZ0+D.t24,0)[0]}" y="${P(0,Y(D.bmY0+D.bmH))[1]}" width="${D.bmD*sc}" height="${D.bmH*sc}" fill="#c8935a"/>`;
+  s+=`<rect x="${P(D.armZ0,0)[0]}" y="${P(0,Y(D.Py+40))[1]}" width="${D.armT*sc}" height="${(-(So.jy-40)+D.Py+40)*sc}" fill="#c9a36a" opacity=".8"/>`;
+  s+=`<circle cx="${P(0,0)[0]}" cy="${P(0,0)[1]}" r="${st.d/2*sc}" fill="#e8590c"/>`;
+  const hz=D.boardZ0+D.t24+D.holdZ, hy=Y(w.yh); const t=w.th*Math.PI/180; const ar=(x1,y1,dx,dy,col,txt,anc='start')=>{ const x2=x1+dx,y2=y1+dy; const a=Math.atan2(dy,dx); return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="2.4"/><polygon points="${x2},${y2} ${x2-9*Math.cos(a-0.4)},${y2-9*Math.sin(a-0.4)} ${x2-9*Math.cos(a+0.4)},${y2-9*Math.sin(a+0.4)}" fill="${col}"/><text x="${x2+(anc==='end'?-4:4)}" y="${y2+4}" text-anchor="${anc}" style="${css};font-weight:600">${txt}</text>`; };
+  const [hx,hyp]=P(hz,hy); s+=ar(hx,hyp,70*Math.sin(t),70*Math.cos(t),'var(--red)',`손 ${fmt(1962)}N (몸 ${w.th}°)`,'start');
+  const [jx,jy]=P(st.zpf,Y(So.jy)); s+=ar(jx,jy,55,0,'var(--acc2)','','start')+`<text x="${jx-6}" y="${jy-10}" text-anchor="end" style="${css};font-weight:600">기둥이 미는 힘 T ${fmt(w.T)}N</text>`;
+  const [bx,by]=P(0,0); s+=ar(bx,by+70,0,-60,'var(--ok)','',)+`<text x="${bx-6}" y="${by+86}" text-anchor="end" style="${css}">가로봉 V ${fmt(w.V)}N, H ${fmt(Math.abs(w.H))}N</text>`;
+  // dims
+  s+=`<line x1="${P(0,0)[0]}" y1="${P(0,40)[1]}" x2="${hx}" y2="${P(0,40)[1]}" stroke="var(--mut)"/><text x="${(P(0,0)[0]+hx)/2}" y="${P(0,40)[1]-4}" text-anchor="middle" style="${css}">e ${fmt(hz)}</text>`;
+  s+=`<line x1="${P(150,0)[0]}" y1="${P(0,0)[1]}" x2="${P(150,0)[0]}" y2="${jy}" stroke="var(--mut)"/><text x="${P(150,0)[0]+4}" y="${(P(0,0)[1]+jy)/2}" style="${css}">h ${fmt(So.h)}</text>`;
+  s+=`<text x="10" y="320" style="${css};fill:var(--mut)">회전 ${fmt(w.M/1000)}N·m ÷ h ${fmt(So.h)} = T ${fmt(w.T)}N (두 기둥 합)</text></svg>`; $('forceSvg').innerHTML=s; }
+function hSvg(){ const w=sol.worst; const M=w.M; const x0=50,x1=440,y0=220,y1=20; const hs=[100,700], Tmax=M/2/100*1000/1000; const X=h=>x0+(h-hs[0])/(hs[1]-hs[0])*(x1-x0), Ymax=Math.ceil(M/2/0.1/1000/500)*500||500; const Y=T=>y0-(T/ (M/2/100))*(y0-y1);
+  let s=`<svg viewBox="0 0 460 260"><line x1="${x0}" y1="${y0}" x2="${x1}" y2="${y0}" stroke="var(--mut)"/><line x1="${x0}" y1="${y0}" x2="${x0}" y2="${y1}" stroke="var(--mut)"/>`;
+  let d=''; for(let h=100;h<=700;h+=10){ const T=M/2/h; d+=(h===100?'M':'L')+X(h)+','+Y(T); } s+=`<path d="${d}" fill="none" stroke="var(--acc)" stroke-width="2.2"/>`;
+  for(const h of [100,200,300,400,500,600,700]) s+=`<text x="${X(h)}" y="${y0+16}" text-anchor="middle" style="${css}">${h}</text>`;
+  for(const f of [0.25,0.5,0.75,1]){ const T=M/2/100*f; s+=`<text x="${x0-4}" y="${Y(T)+4}" text-anchor="end" style="${css}">${fmt(T)}</text><line x1="${x0}" y1="${Y(T)}" x2="${x1}" y2="${Y(T)}" stroke="var(--line)"/>`; }
+  const pt=(h,col,t)=>{ const T=M/2/h; return `<circle cx="${X(h)}" cy="${Y(T)}" r="5" fill="${col}"/><text x="${X(h)+8}" y="${Y(T)-6}" style="${css};font-weight:600">${t} ${fmt(T)}N</text>`; };
+  s+=pt(175-sol.S.yb*0+0,'var(--mut)','v2 위치(아래 175)')+pt(sol.S.h,'var(--acc2)',`v3 (아래 ${fmt(sol.S.h)})`);
+  s+=`<text x="${(x0+x1)/2}" y="${y0+34}" text-anchor="middle" style="${css};fill:var(--mut)">받침 높이 h: 가로봉 아래 mm</text></svg>`; $('hSvg').innerHTML=s; }
+// ---------- envelope (computed here) ----------
+function envelope(){ const base={...PRESETS[0].st}; const ss=[]; for(let s=600;s<=1340;s+=20) ss.push(s); const zz=[]; for(let z=-80;z<=35;z+=5) zz.push(z);
+  const x0=60,x1=470,y0=20,y1=250, cw=(x1-x0)/ss.length, ch=(y1-y0)/zz.length; let s=`<svg viewBox="0 0 500 300">`; let cnt=0,okc=0;
+  for(let i=0;i<ss.length;i++) for(let j=0;j<zz.length;j++){ let ok=0,n=0; for(const d of [22,32,44]) for(const w of [38,50,60]) for(const shape of ['sq','round']){ n++; const c=U.check({...base,s:ss[i],zpf:zz[j],d,w,shape}); if(!c.rows.some(r=>r.st==='fail'&&r.id!=='F11')) ok++; } cnt+=n; okc+=ok; const f=ok/n; const col=f===1?'var(--ok)':f>0?'var(--warn)':'var(--line)'; s+=`<rect x="${x0+i*cw}" y="${y1-(j+1)*ch}" width="${cw+.3}" height="${ch+.3}" fill="${col}" opacity="${f===1?.75:f>0?.6:.7}"><title>안쪽 간격 ${ss[i]}, 기둥 앞면 ${zz[j]}: ${ok}/${n}</title></rect>`; }
+  for(const v of [600,700,800,900,1000,1100,1200,1300]){ const i=(v-600)/20; s+=`<text x="${x0+i*cw}" y="${y1+14}" text-anchor="middle" style="${css}">${v}</text>`; }
+  for(const v of [-80,-60,-40,-20,0,20]){ const j=(v+80)/5; s+=`<text x="${x0-4}" y="${y1-j*ch+3}" text-anchor="end" style="${css}">${v}</text>`; }
+  const mark=(s0,z0,t)=>{ const i=(s0-600)/20, j=(z0+80)/5; return `<circle cx="${x0+i*cw+cw/2}" cy="${y1-j*ch-ch/2}" r="5" fill="none" stroke="var(--fg)" stroke-width="2"/><text x="${x0+i*cw+cw/2+8}" y="${y1-j*ch-ch/2+4}" style="${css};font-weight:600">${t}</text>`; };
+  s+=mark(1050,25,'이노이(추정)');
+  s+=`<text x="${(x0+x1)/2}" y="${y1+32}" text-anchor="middle" style="${css};fill:var(--mut)">기둥 안쪽 간격 (mm)</text><text x="14" y="${(y0+y1)/2}" transform="rotate(-90 14 ${(y0+y1)/2})" text-anchor="middle" style="${css};fill:var(--mut)">기둥 앞면 위치 (가로봉 중심 기준)</text></svg>`;
+  $('envelope').innerHTML=`<div class="grid2"><div class="draw"><h3>되는 철봉 지도</h3>${s}<div class="cap">초록: 가로봉 지름 22·32·44 × 기둥 폭 38·50·60 × 사각·원형 18가지가 모두 통과. 주황: 일부만. 회색: 불가. 칸에 마우스를 올리면 개수.</div></div><div class="note"><b>범위를 정하는 것</b><ul><li>위쪽 끝(+29): 기둥 앞면이 받침팔 뒷면(가로봉 중심 앞 34)보다 앞이면 팔이 기둥에 걸림(G7). 고무캡 5 포함.</li><li>아래쪽 끝(−60): 잭 볼트 M10×150이 팔 뒤로 나올 수 있는 최대 93(G6). M10×200이면 약 −110.</li><li>왼쪽 끝(약 660): 좁은 자리 걸이판에서 가로봉 굽힘이 같은 하중 턱걸이의 1.3배 이내(F3)이고 팔 안쪽 모서리가 몸 중심에서 260 이상(G8). 706 미만은 좁은 자리.</li><li>오른쪽 끝(약 1,280): 받침팔이 55°보다 눕고, 판 옆 모서리가 지렛목이 되면서 팔 비틀림 안전율이 1.5 아래로(F6).</li><li>가로봉 지름은 22~44 전부 통과(G1·G2). 44를 넘으면 팔 위 끝과 가로봉 사이가 3mm 미만.</li></ul></div></div>`;
+  // worst table across envelope
+  const W={}; for(const s0 of [660,700,800,900,1000,1100,1200,1280]) for(const z0 of [-60,-20,0,25,29]) for(const d of [22,32,44]) for(const w of [38,50,60]){ const c=U.check({...base,s:s0,zpf:z0,d,w}); if(c.rows.some(r=>r.st==='fail'&&r.id!=='F11')) continue; for(const r of c.rows){ if(!r.sf||r.id==='F11') continue; if(!W[r.id]||r.val<W[r.id].r.val) W[r.id]={r,s:s0,z:z0,d,w}; } }
+  $('worstTable').innerHTML=`<div class="tw"><table><thead><tr><th>번호</th><th>검사</th><th class="r">가장 낮은 안전율</th><th>그때 철봉</th></tr></thead><tbody>${Object.values(W).sort((a,b)=>a.r.id.localeCompare(b.r.id,'ko',{numeric:true})).map(o=>`<tr><td>${o.r.id}</td><td>${o.r.name}</td><td class="r">${chip(o.r.st)} ${fmt(o.r.val,2)}</td><td class="sub">안쪽 간격 ${o.s}, 기둥 앞면 ${o.z}, 지름 ${o.d}, 기둥 폭 ${o.w}</td></tr>`).join('')}</tbody></table></div><div class="cap">통과 범위 안의 철봉 ${8*5*3*3}가지 중 각 항목이 가장 나쁜 철봉. F11(기둥 굽힘)은 강관 두께에 달려 있어 표에서 뺌.</div>`; }
+// ---------- drawings ----------
+function dimH(x1,x2,y,t){ return `<line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="var(--mut)" stroke-width=".8"/><line x1="${x1}" y1="${y-4}" x2="${x1}" y2="${y+4}" stroke="var(--mut)"/><line x1="${x2}" y1="${y-4}" x2="${x2}" y2="${y+4}" stroke="var(--mut)"/><text x="${(x1+x2)/2}" y="${y-4}" text-anchor="middle" style="${css}">${t}</text>`; }
+function dimV(x,y1,y2,t){ return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2}" stroke="var(--mut)" stroke-width=".8"/><line x1="${x-4}" y1="${y1}" x2="${x+4}" y2="${y1}" stroke="var(--mut)"/><line x1="${x-4}" y1="${y2}" x2="${x+4}" y2="${y2}" stroke="var(--mut)"/><text x="${x+5}" y="${(y1+y2)/2+4}" style="${css}">${t}</text>`; }
+function drawings(){ const out=[];
+  { const k=0.48, ox=20, oy=30, W0=D.boardW, H0=D.boardY1-D.boardY0; const X=x=>ox+(x+W0/2)*k, Y=y=>oy+(D.boardY1-y)*k; let s=`<svg viewBox="0 0 530 220"><rect x="${X(-W0/2)}" y="${Y(D.boardY1)}" width="${W0*k}" height="${H0*k}" fill="var(--ply)" stroke="var(--fg)" stroke-width=".8"/><rect x="${X(-D.bmW/2)}" y="${Y(D.bmY0+D.bmH)}" width="${D.bmW*k}" height="${D.bmH*k}" fill="none" stroke="#c8935a" stroke-dasharray="4 3"/><text x="${X(0)}" y="${Y(-100)}" text-anchor="middle" style="${css};fill:#c8935a">비스트메이커 580×150 (아래 끝 맞춤)</text>`;
+    for(const sg of [-1,1]){ s+=`<circle cx="${X(sg*D.Px)}" cy="${Y(D.Py)}" r="4" fill="var(--acc2)"/>`; for(const m of ['wide','narrow']){ const cx=sg*(D.hookPos[m]-D.cleatW/2); for(const y of [10,55]) s+=`<circle cx="${X(cx)}" cy="${Y(y)}" r="3" fill="${m==='wide'?'var(--acc)':'var(--mut)'}"/>`; } }
+    s+=dimH(X(-W0/2),X(W0/2),Y(D.boardY1)-10,'900')+dimV(X(W0/2)+10,Y(D.boardY1),Y(D.boardY0),'250')+dimH(X(D.Px),X(W0/2),Y(D.Py)+16,`${W0/2-D.Px}`)+dimV(X(W0/2)+40,Y(D.Py),Y(D.boardY0),`${D.Py-D.boardY0}`);
+    s+=dimH(X(-W0/2),X(-(D.hookPos.wide-D.cleatW/2)),Y(-5),`${W0/2-(D.hookPos.wide-D.cleatW/2)}`)+dimH(X(-W0/2),X(-(D.hookPos.narrow-D.cleatW/2)),Y(-150),`${W0/2-(D.hookPos.narrow-D.cleatW/2)}`)+`<text x="${X(-W0/2)}" y="${Y(D.boardY0)+16}" style="${css}">파랑: 받침팔 축 티너트(앞면, Ø12 깊이 12 + Ø10.5 관통) · 주황/회색: 받침목 볼트 넓은/좁은 자리(위에서 ${D.boardY1-55}·${D.boardY1-10})</text></svg>`;
+    out.push(['판: 자작합판 24T 900×250',s,'앞에서 본 모양. 받침목 볼트 구멍은 두 자리 다 뚫어 둠(안 쓰는 자리는 비어 있어도 됨). 비스트메이커 동봉 나사 6개는 v7과 같음.']); }
+  { const k=1.75, ox=40, oy=20; const pl=U.platePoly(D); const X=z=>ox+(z-D.plateBack)*k, Y=y=>oy+(D.plateTop-y)*k; let s=`<svg viewBox="0 0 300 260"><polygon points="${pl.map(([z,y])=>X(z)+','+Y(y)).join(' ')}" fill="#f08c00" opacity=".85" stroke="var(--fg)" stroke-width=".8"/>`; const A=U.apexY(D);
+    for(const d of [22,32,44]){ const yb=U.barY(D,d); s+=`<circle cx="${X(0)}" cy="${Y(yb)}" r="${d/2*k}" fill="none" stroke="#e8590c" stroke-dasharray="${d===32?'':'3 3'}"/>`; }
+    for(const z of [44,62]) for(const y of [-15,25,60]) s+=`<circle cx="${X(z)}" cy="${Y(y)}" r="2.5" fill="var(--fg)"/>`;
+    s+=`<rect x="${X(-14)}" y="${Y(D.plateTop)}" width="${28*k}" height="${2*k}" fill="var(--strap,#1c7ed6)"/>`;
+    s+=dimH(X(D.plateBack),X(D.boardZ0),Y(D.plateTop)-8,`${D.boardZ0-D.plateBack}`)+dimV(X(D.boardZ0)+8,Y(D.plateTop),Y(D.plateBot),`${D.plateTop-D.plateBot}`)+dimH(X(D.plateBack),X(0),Y(A)-4,`${-D.plateBack}`)+dimV(X(D.plateBack)-14,Y(A),Y(D.plateBot),`${(A-D.plateBot).toFixed(1)}`)+dimV(X(D.plateBack)-30,Y(A+D.plateBack),Y(D.plateBot),`${(A+D.plateBack-D.plateBot).toFixed(1)}`)+dimH(X(0),X(D.cleatZ0),Y(D.plateBot)+12,`${D.cleatZ0}`);
+    s+=`<text x="${X(0)}" y="${Y(A)+30}" text-anchor="middle" style="${css}">V 90°</text><text x="10" y="252" style="${css}">점선 원: 가로봉 Ø22·Ø44, 실선 Ø32 · 점: 피스 6개 · 파랑: 끈 홈 28×2</text></svg>`;
+    out.push(['V 홈 걸이판: 자작합판 18T × 2',s,'왼쪽이 철봉 뒤쪽. V 홈 두 빗면은 정확히 45°(직소 45° 또는 톱 가이드). 빗면에 고무판 2~3mm를 붙이면 미끄럼이 줄고 높이만 2mm 올라감.']); }
+  { const k=0.5, ox=30, oy=40; const L=D.armEnd+D.armW/2; let s=`<svg viewBox="0 0 330 140"><path d="M ${ox+D.armW/2*k} ${oy} L ${ox+L*k} ${oy} L ${ox+L*k} ${oy+D.armW*k} L ${ox+D.armW/2*k} ${oy+D.armW*k} A ${D.armW/2*k} ${D.armW/2*k} 0 0 1 ${ox+D.armW/2*k} ${oy} Z" fill="#c9a36a" stroke="var(--fg)" stroke-width=".8"/><circle cx="${ox+D.armW/2*k}" cy="${oy+D.armW/2*k}" r="3.5" fill="var(--acc2)"/><circle cx="${ox+(D.armW/2+D.Rj)*k}" cy="${oy+D.armW/2*k}" r="4" fill="var(--acc)"/>`;
+    s+=dimH(ox,ox+L*k,oy-10,`${Math.round(L)}`)+dimH(ox+D.armW/2*k,ox+(D.armW/2+D.Rj)*k,oy+D.armW*k+16,`${D.Rj}`)+dimV(ox+L*k+8,oy,oy+D.armW*k,'89')+`<text x="${ox}" y="132" style="${css}">파랑: 회전축 Ø10.5 (R44.5 둥근 끝 중심) · 주황: 잭 티너트 M10 (앞면)</text></svg>`;
+    out.push(['받침팔: 구조목 38×89 × 2',s,'두께 38이 앞뒤 방향. 둥근 끝은 지름 89 반원(가로봉 아래 틈 확보). 안쪽 모서리에 스펀지 테이프.']); }
+  { const k=1.3, ox=40, oy=20; let s=`<svg viewBox="0 0 300 190"><rect x="${ox}" y="${oy}" width="${D.cleatW*k}" height="${(D.cleatY1-D.cleatY0)*k}" fill="var(--lum)" stroke="var(--fg)" stroke-width=".8"/>`; for(const y of [10,55]) s+=`<circle cx="${ox+D.cleatW/2*k}" cy="${oy+(D.cleatY1-y)*k}" r="4" fill="var(--acc)"/>`;
+    s+=dimH(ox,ox+D.cleatW*k,oy-6,'89')+dimV(ox+D.cleatW*k+8,oy,oy+(D.cleatY1-D.cleatY0)*k,`${D.cleatY1-D.cleatY0}`)+dimV(ox-14,oy+(D.cleatY1-55)*k,oy+(D.cleatY1-D.cleatY0)*k,'85')+dimV(ox-30,oy+(D.cleatY1-10)*k,oy+(D.cleatY1-D.cleatY0)*k,'40')+`<text x="${ox}" y="180" style="${css}">두께 38(앞뒤). 주황: M10 티너트(뒷면) · 바깥 옆면에 걸이판 피스 6개</text></svg>`;
+    out.push(['위 받침목: 구조목 38×89×105 × 2',s,'판 뒷면에 붙는 짧은 토막. 바깥 옆면(38×105)에 걸이판을 피스로 붙임.']); }
+  $('drawings').innerHTML=out.map(([h,s,c])=>`<div class="draw"><h3>${h}</h3>${s}<div class="cap">${c}</div></div>`).join('');
+  const parts=[['판','자작합판 24T 900×250',1,'v7 24T 600×1200 한 장에서 900×250 + 남는 것'],['V 홈 걸이판','자작합판 18T 117×105 (V 홈)',2,'v7 18T 자투리'],['위 받침목','구조목 38×89×105',2,'v7 구조목 1,800 한 개에서'],['받침팔','구조목 38×89×510 (한끝 반원)',2,'같은 구조목에서 (합계 1,230)'],['받침목 ↔ 판 볼트','M10×60 육각 + 와셔',4,'판 앞에서, 받침목 뒷면 티너트로'],['받침팔 회전축 볼트','M10×70 육각 + 큰 와셔',2,'팔 뒤에서, 판 앞면 티너트로. 처음 한 번 17mm 스패너'],['잭 볼트','M10×150 전체나사 육각 + 나비너트 + 볼트 끝 고무캡',2,'팔 앞면 티너트. 손으로 돌림'],['티너트','M10',8,'받침목 4 + 판 2 + 팔 2 (장바구니 100개짜리에서). 좁은 자리도 쓸 거면 +4'],['걸이판 피스','5×50',12,'걸이판 하나에 6개'],['끈','캠버클 끈 25mm × 0.6~1m',2,'걸이판 위 끝 홈 → 가로봉 아래']];
+  $('parts').querySelector('tbody').innerHTML=parts.map(p=>`<tr><td>${p[0]}</td><td>${p[1]}</td><td class="r">${p[2]}</td><td class="sub">${p[3]}</td></tr>`).join('');
+  const buy=[['M10×150 전체나사 육각볼트','2','잭','쿠팡 미검색'],['M10 나비너트','2','잭 잠금','쿠팡 미검색'],['M10 볼트 끝 고무캡(또는 고무발)','2','기둥 앞면 보호·미끄럼 방지','쿠팡 미검색'],['M10×60 육각볼트 + 와셔','4','받침목 ↔ 판','디오상공사 M10 세트에 해당 길이 있는지 확인 필요'],['M10×70 육각볼트 + 큰 와셔(외경 30)','2','받침팔 회전축','같음'],['캠버클 끈 25mm','2','들림 방지','쿠팡 미검색'],['M10 티너트','8','','장바구니 품목(100개)으로 충분'],['합판·구조목·피스','-','','v7 구매분 남는 것으로 충분(판 900 폭은 24T 1,200 길이 방향으로 자름)']];
+  $('buy').querySelector('tbody').innerHTML=buy.map(p=>`<tr><td>${p[0]}</td><td class="r">${p[1]}</td><td>${p[2]}</td><td class="sub">${p[3]}</td></tr>`).join(''); }
+function update(){ build(); tables(); }
+drawPresets(); drawInputs(); update(); setView('front'); envelope(); drawings();
+
+</script>
+</body></html>
